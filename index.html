@@ -4,13 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>北京·四日</title>
+<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
-
-{leaflet_css}
-
-</style>
-<style>
-
 :root{
   --bg:#f0f2f5;--glass:rgba(255,255,255,.72);--glass-strong:rgba(255,255,255,.88);
   --text:#1a1a2e;--text2:#6b7280;--text3:#9ca3af;
@@ -23,10 +18,10 @@
 }
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{
-  overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
+  font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   background:linear-gradient(135deg,#e8ecf1 0%,#f0f2f5 30%,#faf5f0 70%,#f0eef4 100%);
   background-attachment:fixed;color:var(--text);line-height:1.55;
-  -webkit-font-smoothing:antialiased;-webkit-font-smoothing:antialiased;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
 }
 #map{width:100%;height:40vh;min-height:280px;position:sticky;top:0;z-index:100;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
 .tabs{
@@ -34,8 +29,8 @@ body{
   -webkit-overflow-scrolling:touch;
   background:rgba(255,255,255,.78);backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
-  border-bottom:1px solid rgba(255,255,255,.5);
-  scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,.5);mask-image:linear-gradient(to right,#000 85%,transparent);
+  position:sticky;top:40vh;z-index:99;border-bottom:1px solid rgba(255,255,255,.5);
+  scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);
   -webkit-mask-image:linear-gradient(to right,#000 85%,transparent);
 }
 .tabs::-webkit-scrollbar{display:none}
@@ -194,21 +189,6 @@ body{
 .pay-chip{font-size:10px;padding:2px 7px;border-radius:4px;font-weight:600}
 .pay-chip.ok{background:rgba(16,185,129,.12);color:var(--green)}
 .pay-chip.no{background:rgba(239,68,68,.08);color:var(--red)}
-.share-fab{position:fixed;bottom:20px;right:16px;z-index:9998;
-  width:48px;height:48px;border-radius:50%;border:none;
-  background:var(--accent);color:#fff;font-size:20px;
-  box-shadow:0 4px 16px rgba(79,70,229,.35);
-  cursor:pointer;touch-action:manipulation;display:flex;align-items:center;justify-content:center}
-.qr-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.4);
-  display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
-.qr-overlay.show{opacity:1;pointer-events:auto}
-.qr-card{background:rgba(255,255,255,.95);backdrop-filter:blur(20px);
-  border-radius:20px;padding:28px 24px;text-align:center;
-  box-shadow:0 12px 40px rgba(0,0,0,.15);max-width:320px;width:90vw}
-.qr-title{font-size:17px;font-weight:700;margin-bottom:16px}
-.qr-url{font-size:12px;color:var(--text2);margin-top:12px;word-break:break-all}
-.qr-close{margin-top:16px;padding:8px 28px;border-radius:99px;border:none;
-  background:var(--bg);font-size:14px;font-weight:600;cursor:pointer}
 .lnk-row{display:flex;gap:8px;margin-top:16px;flex-wrap:wrap}
 .lnk-btn{display:inline-flex;align-items:center;gap:5px;padding:10px 18px;
   border-radius:99px;font-size:13px;font-weight:700;text-decoration:none;
@@ -218,7 +198,6 @@ body{
 .lnk-btn:active{transform:scale(.97);filter:brightness(.9)}
 .lnk-btn.reserve{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff}
 .lnk-btn.app{background:var(--glass-strong);border:1px solid rgba(0,0,0,.08);color:var(--text)}
-/* nav */
 .as-overlay{position:fixed;inset:0;z-index:9999;background:rgba(0,0,0,.35);
   display:flex;align-items:flex-end;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s}
 .as-overlay.show{opacity:1;pointer-events:auto}
@@ -244,284 +223,313 @@ body{
   box-shadow:none!important;font-size:10px!important;font-weight:700!important;
   color:#fff!important;padding:0!important}
 .day-tooltip::before{display:none!important}
-
 </style>
 </head>
 <body>
 <div id="map"></div>
 <div class="tabs" id="tabs"></div>
 <div class="content" id="content"></div>
-<div class="as-overlay" id="asOverlay"><div class="as-sheet"><div class="as-group" id="asOpts"></div><div class="as-group"><button onclick="closeNav()">取消</button></div></div></div>
+<div class="as-overlay" id="asOverlay">
+  <div class="as-sheet"><div class="as-group" id="asOpts"></div>
+  <div class="as-group"><button onclick="closeNav()">取消</button></div></div>
+</div>
 <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
-var DATA = {"title": "北京·四日", "subtitle": "6月9日—13日 · 两人 · 环球影城、故宫、颐和园", "hotel": "汉庭(鼓楼店) 大床房 ¥280/晚", "center": {"lat": 39.92, "lng": 116.42}, "zoom": 12, "overview": {"dates": "6月9日(晚抵) - 6月13日(晚返)", "flight": "MF8350去 ZH9108返 ¥1,920/2人", "hotel": "环球酒店2晚(6/9-6/11) + 鼓楼汉庭2晚(6/11-6/13)", "budget": "¥6,700 / ¥8,000", "pace": "正常偏紧凑 · 可早起走1-2万步"}, "days": [{"id": 1, "label": "Day1", "date": "6/10 周三", "title": "魔法世界", "locations": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m", "budget": "¥80", "alert": ""}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.8, "lng": 116.67, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球", "budget": "¥200", "alert": "晚到打车直达约¥80 30min · 地铁已停运"}, {"name": "环球影城", "type": "attraction", "lat": 39.79, "lng": 116.675, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎", "budget": "¥638", "alert": "旺季4.2万/天，开园前1.5h到门口"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.79, "lng": 116.675, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "budget": "¥120"}, {"name": "通州万达/附近", "type": "food", "lat": 39.805, "lng": 116.66, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60", "budget": "¥50"}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.8, "lng": 116.67, "time": "21:30返回", "desc": "明早退房换到市区", "alert": "明早退房，行李随身"}]}, {"id": 2, "label": "Day2", "date": "6/11 周四", "title": "紫禁红墙", "locations": [{"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李", "budget": "¥8"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280", "budget": "¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380", "budget": "¥380", "alert": "避开99元流水线，选350+精妆"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园", "budget": "¥60", "alert": "提前7天晚8点小程序抢票"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷", "budget": "¥50"}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48", "budget": "¥130", "alert": "别去故宫店！前门店排20min"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 3, "label": "Day3", "date": "6/12 周五", "title": "皇家园林", "locations": [{"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进", "budget": "¥60", "alert": "联票比大门票划算"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路", "budget": "¥90", "alert": "这个时间不排队。涮肉天花板"}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "time": "15:00-16:30", "desc": "门票¥20登楼", "budget": "¥20"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费", "budget": "¥0", "alert": "日落后20min蓝调时刻最佳"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到", "budget": "¥18"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 4, "label": "Day4", "date": "6/13 周六", "title": "胡同烟火", "locations": [{"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "08:00退房", "desc": "行李随身", "alert": "最后一天，退房直接去机场"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "time": "09:00-11:00", "desc": "胡同Citywalk", "budget": "¥0"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "time": "12:00-13:30", "desc": "烤鸭整只¥108", "budget": "¥80", "alert": "整只¥108两人刚好"}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "time": "13:30-15:00", "desc": "逛老字号", "budget": "¥0", "alert": "稻香村认准三禾标识"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞", "budget": "¥510"}]}], "routes": [{"from": "大兴机场落地", "to": "环球附近酒店入住", "day": 1}, {"from": "环球附近酒店入住", "to": "环球影城", "day": 1}, {"from": "环球影城", "to": "三把扫帚(环球内)", "day": 1}, {"from": "三把扫帚(环球内)", "to": "通州万达/附近", "day": 1}, {"from": "通州万达/附近", "to": "环球附近酒店", "day": 1}, {"from": "退房前往市区", "to": "汉庭(鼓楼)入住", "day": 2}, {"from": "汉庭(鼓楼)入住", "to": "明制妆造", "day": 2}, {"from": "明制妆造", "to": "故宫", "day": 2}, {"from": "故宫", "to": "故宫餐厅", "day": 2}, {"from": "故宫餐厅", "to": "故宫", "day": 2}, {"from": "故宫", "to": "四季民福(前门)", "day": 2}, {"from": "四季民福(前门)", "to": "汉庭(鼓楼)", "day": 2}, {"from": "汉庭(鼓楼)出发", "to": "颐和园", "day": 3}, {"from": "颐和园", "to": "聚宝源(牛街)", "day": 3}, {"from": "聚宝源(牛街)", "to": "鼓楼", "day": 3}, {"from": "鼓楼", "to": "什刹海", "day": 3}, {"from": "什刹海", "to": "姚记炒肝", "day": 3}, {"from": "姚记炒肝", "to": "汉庭(鼓楼)", "day": 3}, {"from": "汉庭(鼓楼)退房", "to": "南锣鼓巷", "day": 4}, {"from": "南锣鼓巷", "to": "大鸭梨(鼓楼)", "day": 4}, {"from": "大鸭梨(鼓楼)", "to": "前门/大栅栏", "day": 4}, {"from": "前门/大栅栏", "to": "首都机场T3", "day": 4}], "pois": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "day": 1, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m"}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.8, "lng": 116.67, "day": 1, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球"}, {"name": "环球影城", "type": "attraction", "lat": 39.79, "lng": 116.675, "day": 1, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.79, "lng": 116.675, "day": 1, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50"}, {"name": "通州万达/附近", "type": "food", "lat": 39.805, "lng": 116.66, "day": 1, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60"}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.8, "lng": 116.67, "day": 1, "time": "21:30返回", "desc": "明早退房换到市区"}, {"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "day": 2, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "day": 2, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "day": 2, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "day": 2, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷"}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "day": 2, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "day": 3, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "day": 3, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路"}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "day": 3, "time": "15:00-16:30", "desc": "门票¥20登楼"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "day": 3, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "day": 3, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 4, "time": "08:00退房", "desc": "行李随身"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "day": 4, "time": "09:00-11:00", "desc": "胡同Citywalk"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "day": 4, "time": "12:00-13:30", "desc": "烤鸭整只¥108"}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "day": 4, "time": "13:30-15:00", "desc": "逛老字号"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "day": 4, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞"}], "meals": [{"name": "四季民福(前门)", "district": "前门", "type": "烤鸭", "perPerson": "¥130", "dish": "烤鸭半只¥139·芥末鸭掌¥48", "note": "避开故宫店！前门店排队仅20min"}, {"name": "聚宝源(牛街)", "district": "牛街", "type": "涮肉", "perPerson": "¥90", "dish": "手切鲜羊肉¥38·烧饼¥3", "note": "涮肉天花板·晚8点后不排队"}, {"name": "南门涮肉(天坛)", "district": "天坛", "type": "涮肉", "perPerson": "¥85", "dish": "手切羊肉¥42·糖蒜", "note": "性价比最高涮肉"}, {"name": "大鸭梨(鼓楼)", "district": "鼓楼", "type": "烤鸭", "perPerson": "¥80", "dish": "烤鸭整只¥108·京酱肉丝¥38", "note": "平价烤鸭之王"}, {"name": "三把扫帚", "district": "环球影城", "type": "西餐", "perPerson": "¥120", "dish": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "note": "园区内性价比最高"}, {"name": "姚记炒肝", "district": "鼓楼", "type": "小吃", "perPerson": "¥18", "dish": "包子¥3·炒肝¥12", "note": "鼓楼边老店·早餐首选"}, {"name": "护国寺小吃", "district": "地安门", "type": "小吃", "perPerson": "¥15", "dish": "面茶¥6·糖油饼¥4·豌豆黄¥8", "note": "老北京早点一站式"}, {"name": "增盛魁小吃", "district": "东四", "type": "小吃", "perPerson": "¥12", "dish": "糖火烧¥3·豆腐脑¥4", "note": "胡同老味道"}], "budget_table": {"cols": ["类别", "明细", "小计"], "rows": [["大交通", "MF8350去+ZH9108返 ×2人", "¥1,920"], ["住宿", "环球¥200x2+汉庭¥280x2", "¥960"], ["门票", "环球¥638+故宫¥60+颐和园¥60+鼓楼¥20 ×2人", "¥1,556"], ["妆造", "明制汉服精妆", "¥380"], ["餐饮", "4天三餐+零食", "¥755"], ["交通", "地铁+机场线", "¥106"], ["总计", "含弹性", "约¥6,540"]], "total": "¥5,907（缓冲¥800 → 约¥6,700）"}, "warnings": [{"trap": "故宫抢不到票", "fix": "提前7天晚8点准时在\"故宫博物院\"小程序抢，旺季秒没"}, {"trap": "环球排队3h+", "fix": "周四工作日去+开园前1.5h到门口+经济允许买优速通"}, {"trap": "四季民福故宫店排队1000桌", "fix": "去前门店！排队20min味道一样。抖音验证：黄牛号卖50元"}, {"trap": "景区\"老北京炸酱面\"¥38一碗", "fix": "坐地铁2站去胡同吃¥15的"}, {"trap": "全聚德贵(¥280+/人)且味道平庸", "fix": "四季民福/大鸭梨"}, {"trap": "王府井/南锣主街小吃溢價严重", "fix": "去牛街/东四胡同吃地道小吃"}], "emergency": {"police": "110", "ambulance": "120", "hospital": "北大第一医院 · 西城区西什库大街8号"}, "links": [{"label": "故宫预约", "url": "https://gugong.ktmtech.cn/", "type": "reserve"}, {"label": "环球影城App", "url": "https://www.universalbeijingresort.com/", "type": "app"}, {"label": "颐和园预约", "url": "https://www.summerpalace-china.com/", "type": "reserve"}, {"label": "12306购票", "url": "https://www.12306.cn/", "type": "app"}], "weather": {"city": "北京", "daily": [{"code": 1, "high": 32, "low": 19, "date": "2026-06-09"}, {"code": 3, "high": 30, "low": 20, "date": "2026-06-10"}, {"code": 61, "high": 28, "low": 18, "date": "2026-06-11"}, {"code": 1, "high": 31, "low": 19, "date": "2026-06-12"}]}, "checklist": {"证件": ["身份证", "通行证"], "电子设备": ["充电线", "充电宝", "耳机", "相机电池闪光灯"], "洗漱化妆": ["蓬蓬粉", "梳子", "唇膏", "眼药水", "护手霜", "皮炎平", "睫毛夹", "口红眼线", "散粉"], "随身": ["抽纸", "小包纸", "手机挂绳"], "摄影": ["相机", "闪光灯", "CCD"], "配饰": ["项链", "戒指"], "其他": ["水"]};
+var DATA = {"title": "北京·四日", "subtitle": "6月9日—13日 · 两人 · 环球影城、故宫、颐和园", "hotel": "汉庭(鼓楼店) 大床房 ¥280/晚", "center": {"lat": 39.92, "lng": 116.42}, "zoom": 12, "overview": {"dates": "6月9日(晚抵) - 6月13日(晚返)", "flight": "MF8350去 ZH9108返 ¥1,920/2人", "hotel": "环球酒店2晚(6/9-6/11) + 鼓楼汉庭2晚(6/11-6/13)", "budget": "¥6,700 / ¥8,000", "pace": "正常偏紧凑 · 可早起走1-2万步"}, "days": [{"id": 1, "label": "Day1", "date": "6/10 周三", "title": "魔法世界", "locations": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m", "budget": "¥80", "alert": ""}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.8, "lng": 116.67, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球", "budget": "¥200", "alert": "晚到打车直达约¥80 30min · 地铁已停运"}, {"name": "环球影城", "type": "attraction", "lat": 39.79, "lng": 116.675, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎", "budget": "¥638", "alert": "旺季4.2万/天，开园前1.5h到门口"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.79, "lng": 116.675, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "budget": "¥120"}, {"name": "通州万达/附近", "type": "food", "lat": 39.805, "lng": 116.66, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60", "budget": "¥50"}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.8, "lng": 116.67, "time": "21:30返回", "desc": "明早退房换到市区", "alert": "明早退房，行李随身"}]}, {"id": 2, "label": "Day2", "date": "6/11 周四", "title": "紫禁红墙", "locations": [{"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李", "budget": "¥8"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280", "budget": "¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380", "budget": "¥380", "alert": "避开99元流水线，选350+精妆"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园", "budget": "¥60", "alert": "提前7天晚8点小程序抢票"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷", "budget": "¥50"}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48", "budget": "¥130", "alert": "别去故宫店！前门店排20min"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 3, "label": "Day3", "date": "6/12 周五", "title": "皇家园林", "locations": [{"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进", "budget": "¥60", "alert": "联票比大门票划算"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路", "budget": "¥90", "alert": "这个时间不排队。涮肉天花板"}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "time": "15:00-16:30", "desc": "门票¥20登楼", "budget": "¥20"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费", "budget": "¥0", "alert": "日落后20min蓝调时刻最佳"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到", "budget": "¥18"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 4, "label": "Day4", "date": "6/13 周六", "title": "胡同烟火", "locations": [{"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "08:00退房", "desc": "行李随身", "alert": "最后一天，退房直接去机场"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "time": "09:00-11:00", "desc": "胡同Citywalk", "budget": "¥0"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "time": "12:00-13:30", "desc": "烤鸭整只¥108", "budget": "¥80", "alert": "整只¥108两人刚好"}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "time": "13:30-15:00", "desc": "逛老字号", "budget": "¥0", "alert": "稻香村认准三禾标识"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞", "budget": "¥510"}]}], "routes": [{"from": "大兴机场落地", "to": "环球附近酒店入住", "day": 1}, {"from": "环球附近酒店入住", "to": "环球影城", "day": 1}, {"from": "环球影城", "to": "三把扫帚(环球内)", "day": 1}, {"from": "三把扫帚(环球内)", "to": "通州万达/附近", "day": 1}, {"from": "通州万达/附近", "to": "环球附近酒店", "day": 1}, {"from": "退房前往市区", "to": "汉庭(鼓楼)入住", "day": 2}, {"from": "汉庭(鼓楼)入住", "to": "明制妆造", "day": 2}, {"from": "明制妆造", "to": "故宫", "day": 2}, {"from": "故宫", "to": "故宫餐厅", "day": 2}, {"from": "故宫餐厅", "to": "故宫", "day": 2}, {"from": "故宫", "to": "四季民福(前门)", "day": 2}, {"from": "四季民福(前门)", "to": "汉庭(鼓楼)", "day": 2}, {"from": "汉庭(鼓楼)出发", "to": "颐和园", "day": 3}, {"from": "颐和园", "to": "聚宝源(牛街)", "day": 3}, {"from": "聚宝源(牛街)", "to": "鼓楼", "day": 3}, {"from": "鼓楼", "to": "什刹海", "day": 3}, {"from": "什刹海", "to": "姚记炒肝", "day": 3}, {"from": "姚记炒肝", "to": "汉庭(鼓楼)", "day": 3}, {"from": "汉庭(鼓楼)退房", "to": "南锣鼓巷", "day": 4}, {"from": "南锣鼓巷", "to": "大鸭梨(鼓楼)", "day": 4}, {"from": "大鸭梨(鼓楼)", "to": "前门/大栅栏", "day": 4}, {"from": "前门/大栅栏", "to": "首都机场T3", "day": 4}], "pois": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "day": 1, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m"}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.8, "lng": 116.67, "day": 1, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球"}, {"name": "环球影城", "type": "attraction", "lat": 39.79, "lng": 116.675, "day": 1, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.79, "lng": 116.675, "day": 1, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50"}, {"name": "通州万达/附近", "type": "food", "lat": 39.805, "lng": 116.66, "day": 1, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60"}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.8, "lng": 116.67, "day": 1, "time": "21:30返回", "desc": "明早退房换到市区"}, {"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "day": 2, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "day": 2, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "day": 2, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "day": 2, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷"}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "day": 2, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "day": 3, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "day": 3, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路"}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "day": 3, "time": "15:00-16:30", "desc": "门票¥20登楼"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "day": 3, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "day": 3, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 4, "time": "08:00退房", "desc": "行李随身"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "day": 4, "time": "09:00-11:00", "desc": "胡同Citywalk"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "day": 4, "time": "12:00-13:30", "desc": "烤鸭整只¥108"}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "day": 4, "time": "13:30-15:00", "desc": "逛老字号"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "day": 4, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞"}], "meals": [{"name": "四季民福(前门)", "district": "前门", "type": "烤鸭", "perPerson": "¥130", "dish": "烤鸭半只¥139·芥末鸭掌¥48", "note": "避开故宫店！前门店排队仅20min"}, {"name": "聚宝源(牛街)", "district": "牛街", "type": "涮肉", "perPerson": "¥90", "dish": "手切鲜羊肉¥38·烧饼¥3", "note": "涮肉天花板·晚8点后不排队"}, {"name": "南门涮肉(天坛)", "district": "天坛", "type": "涮肉", "perPerson": "¥85", "dish": "手切羊肉¥42·糖蒜", "note": "性价比最高涮肉"}, {"name": "大鸭梨(鼓楼)", "district": "鼓楼", "type": "烤鸭", "perPerson": "¥80", "dish": "烤鸭整只¥108·京酱肉丝¥38", "note": "平价烤鸭之王"}, {"name": "三把扫帚", "district": "环球影城", "type": "西餐", "perPerson": "¥120", "dish": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "note": "园区内性价比最高"}, {"name": "姚记炒肝", "district": "鼓楼", "type": "小吃", "perPerson": "¥18", "dish": "包子¥3·炒肝¥12", "note": "鼓楼边老店·早餐首选"}, {"name": "护国寺小吃", "district": "地安门", "type": "小吃", "perPerson": "¥15", "dish": "面茶¥6·糖油饼¥4·豌豆黄¥8", "note": "老北京早点一站式"}, {"name": "增盛魁小吃", "district": "东四", "type": "小吃", "perPerson": "¥12", "dish": "糖火烧¥3·豆腐脑¥4", "note": "胡同老味道"}], "budget_table": {"cols": ["类别", "明细", "小计"], "rows": [["大交通", "MF8350去+ZH9108返 ×2人", "¥1,920"], ["住宿", "环球¥200x2+汉庭¥280x2", "¥960"], ["门票", "环球¥638+故宫¥60+颐和园¥60+鼓楼¥20 ×2人", "¥1,556"], ["妆造", "明制汉服精妆", "¥380"], ["餐饮", "4天三餐+零食", "¥755"], ["交通", "地铁+机场线", "¥106"], ["总计", "含弹性", "约¥6,540"]], "total": "¥5,907（缓冲¥800 → 约¥6,700）"}, "warnings": [{"trap": "故宫抢不到票", "fix": "提前7天晚8点准时在\"故宫博物院\"小程序抢，旺季秒没"}, {"trap": "环球排队3h+", "fix": "周四工作日去+开园前1.5h到门口+经济允许买优速通"}, {"trap": "四季民福故宫店排队1000桌", "fix": "去前门店！排队20min味道一样。抖音验证：黄牛号卖50元"}, {"trap": "景区\"老北京炸酱面\"¥38一碗", "fix": "坐地铁2站去胡同吃¥15的"}, {"trap": "全聚德贵(¥280+/人)且味道平庸", "fix": "四季民福/大鸭梨"}, {"trap": "王府井/南锣主街小吃溢價严重", "fix": "去牛街/东四胡同吃地道小吃"}], "emergency": {"police": "110", "ambulance": "120", "hospital": "北大第一医院 · 西城区西什库大街8号"}, "links": [{"label": "故宫预约", "url": "https://gugong.ktmtech.cn/", "type": "reserve"}, {"label": "环球影城App", "url": "https://www.universalbeijingresort.com/", "type": "app"}, {"label": "颐和园预约", "url": "https://www.summerpalace-china.com/", "type": "reserve"}, {"label": "12306购票", "url": "https://www.12306.cn/", "type": "app"}], "weather": {"city": "北京", "daily": [{"code": 1, "high": 32, "low": 19, "date": "2026-06-09"}, {"code": 3, "high": 30, "low": 20, "date": "2026-06-10"}, {"code": 61, "high": 28, "low": 18, "date": "2026-06-11"}, {"code": 1, "high": 31, "low": 19, "date": "2026-06-12"}]}, "checklist": {"证件": ["身份证", "通行证"], "电子设备": ["充电线", "充电宝", "耳机", "相机电池闪光灯"], "洗漱化妆": ["蓬蓬粉", "梳子", "唇膏", "眼药水", "护手霜", "皮炎平", "睫毛夹", "口红眼线", "散粉"], "随身": ["抽纸", "小包纸", "手机挂绳"], "摄影": ["相机", "闪光灯", "CCD"], "配饰": ["项链", "戒指"], "其他": ["水"]}};
 var DAY_COLORS = {"1": "#e8835e", "2": "#5d8c7a", "3": "#7b9ec7", "4": "#c490b6", "5": "#e8b456", "6": "#d94f4f"};
 var TICONS = {"attraction": "#3b82f6", "food": "#ef4444", "shopping": "#8b5cf6", "hotel": "#f59e0b", "transport": "#6b7280"};
-var TEMOJI = {"attraction": "★", "food": "F", "shopping": "S", "hotel": "H", "transport": "T"};
-var SHARE_URL = "";
+var TEMOJI = {"attraction": "\\u2605", "food": "\\uD83C\\uDF74", "shopping": "\\uD83D\\uDECD", "hotel": "\\uD83C\\uDFE8", "transport": "\\uD83D\\uDE87"};
+var CLAT = 39.92;
+var CLNG = 116.42;
+var ZOOM = 12;
 
-var map=null,allCoords=[],markers=[],polylines=[];
+var map = null, allCoords = [], markers = [], polylines = [];
 
-function initMap(){
-  if(map||typeof L==='undefined') return;
-  try{
-    map=L.map('map',{center:[39.92,116.42],zoom:12,zoomControl:false});L.control.zoom({position:'topright'}).addTo(map);
-    // 高德瓦片
-    L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',{maxZoom:18}).addTo(map);
-      subdomains:'1234',maxZoom:18,attribution:'&copy; 高德'
+function initMap() {
+  if (map || typeof L === 'undefined') return;
+  try {
+    map = L.map('map', {center: [CLAT, CLNG], zoom: ZOOM, zoomControl: false});
+    L.control.zoom({position:'topright'}).addTo(map);
+    L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}', {
+      maxZoom: 18
     }).addTo(map);
-    
-    document.getElementById('mapStatus').style.display='none';
-    showDay(cur||0);
-  }catch(e){ document.getElementById('mapStatus').style.display='block'; document.getElementById('mapStatus').textContent='Map: '+e.message; }
+    showDay(0);
+  } catch(e) {}
 }
 
-function clearMap(){
-  if(!map) return;
-  markers.forEach(function(m){map.removeLayer(m);});
-  polylines.forEach(function(p){map.removeLayer(p);});
-  markers=[]; polylines=[];
+function clearMap() {
+  if (!map) return;
+  markers.forEach(function(m) { map.removeLayer(m); });
+  polylines.forEach(function(p) { map.removeLayer(p); });
+  markers = [];
+  polylines = [];
 }
 
-DATA.pois.forEach(function(p){ if(p.lat) allCoords.push([p.lat,p.lng]); });
+DATA.pois.forEach(function(p) { if (p.lat) allCoords.push([p.lat, p.lng]); });
 
-function showDay(idx){
-  if(!map) return;
+function showDay(idx) {
+  if (!map) return;
   clearMap();
-  var dayPois=idx===0?DATA.pois:DATA.pois.filter(function(p){return p.day===idx;});
-  var dayRoutes=idx===0?(DATA.routes||[]):(DATA.routes||[]).filter(function(r){return r.day===idx;});
-  var coords=[];
-  dayPois.forEach(function(p){
-    if(!p.lat) return;
-    var clr=TICONS[p.type]||'#888', em=TEMOJI[p.type]||'·';
-    var m=L.marker([p.lat,p.lng],{icon:L.divIcon({
-      html:'<div style="width:24px;height:24px;background:'+clr+';border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.22)">'+em+'</div>',
-      className:'',iconSize:[24,24],iconAnchor:[12,12],popupAnchor:[0,-14]})}).addTo(map);
-    var pop='<b>'+p.name+'</b>';
-    if(p.time) pop+='<br>'+p.time;
-    if(p.desc) pop+='<br>'+p.desc;
+  var dayPois = idx === 0 ? DATA.pois : DATA.pois.filter(function(p) { return p.day === idx; });
+  var dayRoutes = idx === 0 ? (DATA.routes || []) : (DATA.routes || []).filter(function(r) { return r.day === idx; });
+  var coords = [];
+
+  dayPois.forEach(function(p) {
+    if (!p.lat) return;
+    var clr = TICONS[p.type] || '#888';
+    var em = TEMOJI[p.type] || '·';
+    var m = L.marker([p.lat, p.lng], {icon: L.divIcon({
+      html: '<div style="width:24px;height:24px;background:' + clr + ';border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;box-shadow:0 2px 6px rgba(0,0,0,.22)">' + em + '</div>',
+      className: '', iconSize: [24, 24], iconAnchor: [12, 12], popupAnchor: [0, -14]
+    })}).addTo(map);
+    var pop = '<b>' + p.name + '</b>';
+    if (p.time) pop += '<br>' + p.time;
+    if (p.desc) pop += '<br>' + p.desc;
     m.bindPopup(pop);
-    m.bindTooltip(p.name,{permanent:true,direction:'right',offset:[10,0],className:'poi-tooltip'});
-    markers.push(m); coords.push([p.lat,p.lng]);
+    m.bindTooltip(p.name, {permanent: true, direction: 'right', offset: [10, 0], className: 'poi-tooltip'});
+    markers.push(m);
+    coords.push([p.lat, p.lng]);
   });
-  dayRoutes.forEach(function(r){
-    var f=DATA.pois.find(function(p){return p.name===r.from;});
-    var t=DATA.pois.find(function(p){return p.name===r.to;});
-    if(!f||!t) return;
-    var color=DAY_COLORS[r.day]||'#999';
-    var line=L.polyline([[f.lat,f.lng],[t.lat,t.lng]],{color:color,weight:2.5,opacity:.55,dashArray:'8,5'}).addTo(map);
+
+  dayRoutes.forEach(function(r) {
+    var f = DATA.pois.find(function(p) { return p.name === r.from; });
+    var t = DATA.pois.find(function(p) { return p.name === r.to; });
+    if (!f || !t) return;
+    var color = DAY_COLORS[r.day] || '#999';
+    var line = L.polyline([[f.lat, f.lng], [t.lat, t.lng]], {
+      color: color, weight: 2.5, opacity: 0.55, dashArray: '8,5'
+    }).addTo(map);
     polylines.push(line);
-    var mlat=(f.lat+t.lat)/2, mlng=(f.lng+t.lng)/2;
-    var badge=L.circleMarker([mlat,mlng],{radius:12,color:'#fff',weight:2,fillColor:color,fillOpacity:.9}).addTo(map);
-    badge.bindTooltip('D'+r.day,{permanent:true,direction:'center',className:'day-tooltip',offset:[0,0]});
+    var mlat = (f.lat + t.lat) / 2, mlng = (f.lng + t.lng) / 2;
+    var badge = L.circleMarker([mlat, mlng], {
+      radius: 12, color: '#fff', weight: 2, fillColor: color, fillOpacity: 0.9
+    }).addTo(map);
+    badge.bindTooltip('D' + r.day, {permanent: true, direction: 'center', className: 'day-tooltip', offset: [0, 0]});
     markers.push(badge);
   });
-  if(coords.length) map.fitBounds(coords,{padding:[40,40],maxZoom:15});
+
+  if (coords.length) map.fitBounds(coords, {padding: [40, 40], maxZoom: 15});
 }
 
-var cur=0,tabsEl=document.getElementById('tabs'),ctEl=document.getElementById('content');
-var LB={'attraction':'景点','food':'美食','shopping':'购物','hotel':'住宿','transport':'交通'};
-function badgeHtml(type){return '<span class="badge '+type+'">'+(LB[type]||type)+'</span>';}
+// ===== UI =====
+var cur = 0, tabsEl = document.getElementById('tabs'), ctEl = document.getElementById('content');
+var LB = {attraction:'景点', food:'美食', shopping:'购物', hotel:'住宿', transport:'交通'};
+function badgeHtml(type) { return '<span class="badge ' + type + '">' + (LB[type] || type) + '</span>'; }
 
-function renderOverview(){
-  var h='<div class="hero"><h1>'+DATA.title+'</h1><p class="sub">'+DATA.subtitle+'</p></div>';
-  h+='<div class="info-grid">';
-  var info=DATA.overview||{};
-  [['日期',info.dates],['航班',info.flight],['酒店',info.hotel],['预算',info.budget],['节奏',info.pace]]
-    .filter(function(x){return x[1];})
-    .forEach(function(x){h+='<div class="info-chip"><div class="label">'+x[0]+'</div><div class="value">'+x[1]+'</div></div>';});
-  h+='</div>';
-  var dc=['','#4f46e5','#f59e0b','#10b981','#ef4444','#8b5cf6'];
-  h+='<div class="sec-head">行程概览</div>';
-  (DATA.days||[]).forEach(function(d){
-    var clr=dc[d.id]||'#6b7280';
-    h+='<div class="day-preview" onclick="go('+d.id+')"><div class="dp-dot" style="background:'+clr+'">D'+d.id+'</div>';
-    h+='<div class="dp-body"><div class="dp-title">'+d.label+' · '+d.title+'</div>';
-    h+='<div class="dp-route">'+d.date+' — '+(d.locations||[]).map(function(l){return l.name;}).join(' → ')+'</div></div></div>';
+function renderOverview() {
+  var h = '<div class="hero"><h1>北京·四日</h1><p class="sub">6月9日—13日 · 两人 · 环球影城、故宫、颐和园</p></div>';
+  h += '<div class="info-grid">';
+  var info = DATA.overview || {};
+  [['DATE', info.dates], ['FLIGHT', info.flight], ['HOTEL', info.hotel], ['BUDGET', info.budget], ['PACE', info.pace]]
+    .filter(function(x) { return x[1]; })
+    .forEach(function(x) { h += '<div class="info-chip"><div class="label">' + x[0] + '</div><div class="value">' + x[1] + '</div></div>'; });
+  h += '</div>';
+
+  var dc = ['', '#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
+  h += '<div class="sec-head">DAYS</div>';
+  (DATA.days || []).forEach(function(d) {
+    var clr = dc[d.id] || '#6b7280';
+    h += '<div class="day-preview" onclick="go(' + d.id + ')"><div class="dp-dot" style="background:' + clr + '">D' + d.id + '</div>';
+    h += '<div class="dp-body"><div class="dp-title">' + d.label + ' · ' + d.title + '</div>';
+    h += '<div class="dp-route">' + d.date + ' — ' + (d.locations || []).map(function(l) { return l.name; }).join(' → ') + '</div></div></div>';
   });
-  if(DATA.budget_table){
-    var bt=DATA.budget_table;
-    h+='<div class="sec-head">预算明细</div><div class="budget-wrap"><div class="budget-title">合计</div>';
-    h+='<table class="meal-table"><thead><tr>';
-    (bt.cols||['类别','明细','小计']).forEach(function(c){h+='<th>'+c+'</th>';});
-    h+='</tr></thead><tbody>';
-    (bt.rows||[]).forEach(function(r,i){
-      h+='<tr'+(i===bt.rows.length-1?' class="total-row"':'')+'>';
-      r.forEach(function(c){h+='<td>'+c+'</td>';});
-      h+='</tr>';
+
+  if (DATA.budget_table) {
+    var bt = DATA.budget_table;
+    h += '<div class="sec-head">BUDGET</div><div class="budget-wrap"><div class="budget-title">TOTAL</div>';
+    h += '<table class="meal-table"><thead><tr>';
+    (bt.cols || ['CATEGORY', 'DETAIL', 'AMOUNT']).forEach(function(c) { h += '<th>' + c + '</th>'; });
+    h += '</tr></thead><tbody>';
+    (bt.rows || []).forEach(function(r, i) {
+      h += '<tr' + (i === bt.rows.length - 1 ? ' class="total-row"' : '') + '>';
+      r.forEach(function(c) { h += '<td>' + c + '</td>'; });
+      h += '</tr>';
     });
-    h+='</tbody></table>';
-    if(bt.total) h+='<div style="text-align:right;margin-top:12px;font-size:18px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">总计 '+bt.total+'</div>';
-    h+='</div>';
+    h += '</tbody></table>';
+    if (bt.total) h += '<div style="text-align:right;margin-top:12px;font-size:18px;font-weight:800;background:linear-gradient(135deg,#f59e0b,#ef4444);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;">TOTAL ' + bt.total + '</div>';
+    h += '</div>';
   }
-  if(DATA.meals){
-    var mc={'烤鸭':'#ef4444','涮肉':'#f59e0b','小吃':'#10b981','西餐':'#8b5cf6'}, me={'烤鸭':'D','涮肉':'P','小吃':'d','西餐':'B'};
-    h+='<div class="sec-head">美食清单</div><div class="meal-list">';
-    DATA.meals.forEach(function(m){
-      var clr=mc[m.type]||'#6b7280';
-      h+='<div class="meal-card"><div class="m-icon" style="background:'+clr+'18;color:'+clr+'">'+(me[m.type]||'S')+'</div>';
-      h+='<div class="m-body"><div class="m-name">'+m.name+'</div><div class="m-meta">'+m.district+' · '+m.type+'</div>';
-      h+='<div class="m-dish">'+m.dish+'</div>';
-      if(m.note) h+='<div class="m-note">'+m.note+'</div>';
-      h+='</div><div class="m-price">'+m.perPerson+'</div></div>';
+
+  if (DATA.meals) {
+    var mc = {COOKED_DUCK:'#ef4444', HOTPOT:'#f59e0b', SNACK:'#10b981', WESTERN:'#8b5cf6'};
+    h += '<div class="sec-head">FOOD</div><div class="meal-list">';
+    DATA.meals.forEach(function(m) {
+      var clr = mc[m.type] || '#6b7280';
+      h += '<div class="meal-card"><div class="m-icon" style="background:' + clr + '18;color:' + clr + '">S</div>';
+      h += '<div class="m-body"><div class="m-name">' + m.name + '</div><div class="m-meta">' + m.district + ' · ' + m.type + '</div>';
+      h += '<div class="m-dish">' + m.dish + '</div>';
+      if (m.note) h += '<div class="m-note">' + m.note + '</div>';
+      h += '</div><div class="m-price">' + m.perPerson + '</div></div>';
     });
-    h+='</div>';
+    h += '</div>';
   }
-  if(DATA.warnings){
-    h+='<div class="sec-head">避坑指南</div>';
-    DATA.warnings.forEach(function(w){h+='<div class="warn-card"><div class="trap">'+w.trap+'</div><div class="fix">'+w.fix+'</div></div>';});
+
+  if (DATA.warnings) {
+    h += '<div class="sec-head">WARNINGS</div>';
+    DATA.warnings.forEach(function(w) { h += '<div class="warn-card"><div class="trap">' + w.trap + '</div><div class="fix">' + w.fix + '</div></div>'; });
   }
-  if(DATA.emergency){
-    h+='<div class="sec-head">应急信息</div>';
-    var em=DATA.emergency;
-    h+='<div class="emer-card"><div class="desc">';
-    if(em.police) h+='报警：'+em.police+' · ';
-    if(em.ambulance) h+='急救：'+em.ambulance+'<br>';
-    if(em.hospital) h+='最近医院：'+em.hospital;
-    h+='</div></div>';
+
+  if (DATA.emergency) {
+    h += '<div class="sec-head">EMERGENCY</div>';
+    var em = DATA.emergency;
+    h += '<div class="emer-card"><div class="desc">';
+    if (em.police) h += 'POLICE: ' + em.police + ' · ';
+    if (em.ambulance) h += 'AMBULANCE: ' + em.ambulance + '<br>';
+    if (em.hospital) h += 'HOSPITAL: ' + em.hospital;
+    h += '</div></div>';
   }
-  if(DATA.links){
-    h+='<div class="sec-head">快捷链接</div><div class="links">';
-    DATA.links.forEach(function(l){h+='<a class="lnk-btn '+(l.type==='reserve'?'reserve':'app')+'" href="'+l.url+'" target="_blank">'+l.label+'</a>';});
-    h+='</div>';
+
+  if (DATA.links) {
+    h += '<div class="sec-head">LINKS</div><div class="lnk-row">';
+    DATA.links.forEach(function(l) { h += '<a class="lnk-btn ' + l.type + '" href="' + l.url + '" target="_blank">' + l.label + '</a>'; });
+    h += '</div>';
   }
   return h;
 }
 
-function renderDay(idx){
-  var d=DATA.days.find(function(x){return x.id===idx;}); if(!d) return '';
-  var h='<div class="day-head"><h2>'+d.label+' · '+d.title+'</h2><p>'+d.date+'</p></div><div class="timeline">';
-  (d.locations||[]).forEach(function(l){
-    h+='<div class="tl-item"><div class="tl-dot '+(l.type||'attraction')+'"></div>';
-    h+='<div class="card"><div class="time">'+l.time+'</div>';
-    h+='<div class="name">'+badgeHtml(l.type)+' '+l.name+'</div><div class="desc">'+l.desc+'</div>';
-    if(l.budget) h+='<div class="budget">'+l.budget+'</div>';
-    if(l.alert) h+='<div class="card-alert">'+l.alert+'</div>';
-    var btns='';
-    if(l.lat) btns+='<button class="cbtn nav" data-lat="'+l.lat+'" data-lng="'+l.lng+'" data-name="'+l.name.replace(/"/g,'&quot;')+'">N 导航</button>';
-    if(l.xhs) btns+='<a class="cbtn xhs" href="'+l.xhs+'" target="_blank">X 小红书</a>';
-    if(l.dianping) btns+='<a class="cbtn dp" href="'+l.dianping+'" target="_blank">D 点评</a>';
-    if(l.reserve) btns+='<a class="cbtn rsv" href="'+l.reserve+'" target="_blank">R 预约</a>';
-    if(btns) h+='<div class="btn-row">'+btns+'</div>';
-    if(l.pay){
-      var pl={'alipay':'支付宝','wechat':'微信','cash':'现金','card':'刷卡'};
-      var ps={1:'ok',0.5:'idk',0:'no'}, ph='<div class="pay-row">';
-      for(var k in l.pay){ var s=ps[l.pay[k]]||'idk'; ph+='<span class="pay-chip '+s+'">'+(pl[k]||k)+'</span>'; }
-      h+=ph+'</div>';
+function renderDay(idx) {
+  var d = DATA.days.find(function(x) { return x.id === idx; });
+  if (!d) return '';
+  var h = '<div class="day-head"><h2>' + d.label + ' · ' + d.title + '</h2><p>' + d.date + '</p></div><div class="timeline">';
+  (d.locations || []).forEach(function(l) {
+    h += '<div class="tl-item"><div class="tl-dot ' + (l.type || 'attraction') + '"></div>';
+    h += '<div class="card"><div class="time">' + l.time + '</div>';
+    h += '<div class="name">' + badgeHtml(l.type) + ' ' + l.name + '</div><div class="desc">' + l.desc + '</div>';
+    if (l.budget) h += '<div class="budget">' + l.budget + '</div>';
+    if (l.alert) h += '<div class="card-alert">' + l.alert + '</div>';
+    var btns = '';
+    if (l.lat) btns += '<button class="cbtn nav" data-lat="' + l.lat + '" data-lng="' + l.lng + '" data-name="' + l.name.replace(/"/g, '&quot;') + '">NAV</button>';
+    if (l.xhs) btns += '<a class="cbtn xhs" href="' + l.xhs + '" target="_blank">XHS</a>';
+    if (l.dianping) btns += '<a class="cbtn dp" href="' + l.dianping + '" target="_blank">DP</a>';
+    if (l.reserve) btns += '<a class="cbtn rsv" href="' + l.reserve + '" target="_blank">RSV</a>';
+    if (btns) h += '<div class="btn-row">' + btns + '</div>';
+    if (l.pay) {
+      var pl = {alipay:'ALIPAY', wechat:'WECHAT', cash:'CASH', card:'CARD'};
+      var ps = {1:'ok', 0.5:'idk', 0:'no'}, ph = '<div class="pay-row">';
+      for (var k in l.pay) { var s = ps[l.pay[k]] || 'idk'; ph += '<span class="pay-chip ' + s + '">' + (pl[k] || k) + '</span>'; }
+      h += ph + '</div>';
     }
-    h+='</div></div>';
+    h += '</div></div>';
   });
-  return h+'</div>';
+  return h + '</div>';
 }
 
-function renderWeather(){
-  var w=DATA.weather;
-  var wcode={0:'S 晴',1:'C 少云',2:'C 多云',3:'C 阴',45:'F 雾',51:'R 小雨',53:'R 小雨',61:'R 中雨',80:'R 阵雨',95:'T 雷暴'};
-  var today=new Date(); today.setHours(0,0,0,0);
-  var startIdx=0;
-  w.daily.forEach(function(d,i){ var dd=new Date(d.date+'T00:00:00'); if(Math.abs(dd-today)<Math.abs(new Date(w.daily[startIdx].date+'T00:00:00')-today)) startIdx=i; });
-  var days=w.daily.slice(startIdx,startIdx+4);
-  var h='<div class="hero"><h1>'+w.city+'天气</h1><p class="sub">实时预报</p></div><div class="weather-card">';
-  h+='<div class="w-main"><div class="w-icon">'+days[0].high+'/'+days[0].low+'</div>';
-  h+='<div class="w-info"><div class="w-temp">'+days[0].high+'° / '+days[0].low+'°</div><div class="w-desc">今日</div></div></div>';
-  h+='<div class="w-forecast">';
-  days.forEach(function(d,i){ h+='<div class="w-day"><div class="w-dname">'+(i===0?'今天':(d.date||'').slice(5))+'</div><div class="w-dtemp">'+d.high+'° <span>'+d.low+'°</span></div></div>'; });
-  return h+'</div></div>';
+function renderWeather() {
+  var w = DATA.weather;
+  var today = new Date(); today.setHours(0, 0, 0, 0);
+  var startIdx = 0;
+  w.daily.forEach(function(d, i) {
+    var dd = new Date(d.date + 'T00:00:00');
+    if (Math.abs(dd - today) < Math.abs(new Date(w.daily[startIdx].date + 'T00:00:00') - today)) startIdx = i;
+  });
+  var days = w.daily.slice(startIdx, startIdx + 4);
+  var h = '<div class="hero"><h1>' + w.city + '</h1><p class="sub">WEATHER</p></div><div class="weather-card">';
+  h += '<div class="w-main"><div class="w-icon">' + days[0].high + '/' + days[0].low + '</div>';
+  h += '<div class="w-info"><div class="w-temp">' + days[0].high + ' / ' + days[0].low + '</div><div class="w-desc">TODAY</div></div></div>';
+  h += '<div class="w-forecast">';
+  days.forEach(function(d, i) {
+    h += '<div class="w-day"><div class="w-dname">' + (i === 0 ? 'TODAY' : (d.date || '').slice(5)) + '</div><div class="w-dtemp">' + d.high + ' <span>' + d.low + '</span></div></div>';
+  });
+  return h + '</div></div>';
 }
 
-function renderChecklist(){
-  var h='<div class="hero"><h1>物资清单</h1><p class="sub"><button class="chk-all-btn" id="chkAllBtn" onclick="toggleAllChk()">全部勾选</button></p></div>';
-  var groups=DATA.checklist;
-  Object.keys(groups).forEach(function(g){
-    h+='<div class="chk-group"><div class="chk-title">'+g+'</div><div class="chk-items">';
-    groups[g].forEach(function(item){
-      var key='chk_'+g+'_'+item;
-      h+='<div class="chk-item" data-chk="'+key+'"><div class="chk-box"></div><div class="chk-name">'+item+'</div></div>';
+function renderChecklist() {
+  var h = '<div class="hero"><h1>CHECKLIST</h1><p class="sub"><button class="chk-all-btn" id="chkAllBtn" onclick="toggleAllChk()">TOGGLE ALL</button></p></div>';
+  var groups = DATA.checklist;
+  Object.keys(groups).forEach(function(g) {
+    h += '<div class="chk-group"><div class="chk-title">' + g + '</div><div class="chk-items">';
+    groups[g].forEach(function(item) {
+      var key = 'chk_' + g + '_' + item;
+      h += '<div class="chk-item" data-chk="' + key + '"><div class="chk-box"></div><div class="chk-name">' + item + '</div></div>';
     });
-    h+='</div></div>';
+    h += '</div></div>';
   });
   return h;
 }
 
-ctEl.addEventListener('click',function(e){
-  var item=e.target.closest('.chk-item'); if(!item) return;
-  var key=item.dataset.chk, isDone=item.classList.contains('done');
-  if(isDone){ item.classList.remove('done'); localStorage.removeItem(key); }
-  else { item.classList.add('done'); localStorage.setItem(key,'1'); }
-});
-ctEl.addEventListener('click',function(e){
-  var btn=e.target.closest('.cbtn.nav'); if(!btn) return;
-  var name=btn.dataset.name, lat=parseFloat(btn.dataset.lat), lng=parseFloat(btn.dataset.lng);
-  if(name&&lat) openNav(name,lat,lng);
+ctEl.addEventListener('click', function(e) {
+  var item = e.target.closest('.chk-item');
+  if (!item) return;
+  var key = item.dataset.chk, isDone = item.classList.contains('done');
+  if (isDone) { item.classList.remove('done'); localStorage.removeItem(key); }
+  else { item.classList.add('done'); localStorage.setItem(key, '1'); }
 });
 
-function toggleAllChk(){
-  var items=document.querySelectorAll('.chk-item');
-  var allDone=Array.from(items).every(function(el){return el.classList.contains('done');});
-  items.forEach(function(el){
-    if(allDone){ el.classList.remove('done'); localStorage.removeItem(el.dataset.chk); }
-    else { el.classList.add('done'); localStorage.setItem(el.dataset.chk,'1'); }
+ctEl.addEventListener('click', function(e) {
+  var btn = e.target.closest('.cbtn.nav');
+  if (!btn) return;
+  var name = btn.dataset.name, lat = parseFloat(btn.dataset.lat), lng = parseFloat(btn.dataset.lng);
+  if (name && lat) openNav(name, lat, lng);
+});
+
+function toggleAllChk() {
+  var items = document.querySelectorAll('.chk-item');
+  var allDone = Array.from(items).every(function(el) { return el.classList.contains('done'); });
+  items.forEach(function(el) {
+    if (allDone) { el.classList.remove('done'); localStorage.removeItem(el.dataset.chk); }
+    else { el.classList.add('done'); localStorage.setItem(el.dataset.chk, '1'); }
   });
-  var btn=document.getElementById('chkAllBtn'); if(btn) btn.textContent=allDone?'全部勾选':'全部取消';
+  var btn = document.getElementById('chkAllBtn');
+  if (btn) btn.textContent = allDone ? 'ALL CHECK' : 'ALL CLEAR';
 }
 
-function restoreChk(){
-  for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf('chk_')===0){ var el=document.querySelector('[data-chk="'+k+'"]'); if(el) el.classList.add('done'); } }
+function restoreChk() {
+  for (var i = 0; i < localStorage.length; i++) {
+    var k = localStorage.key(i);
+    if (k.indexOf('chk_') === 0) {
+      var el = document.querySelector('[data-chk="' + k + '"]');
+      if (el) el.classList.add('done');
+    }
+  }
 }
 
-function go(idx){
-  cur=idx;
-  tabsEl.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('active',+b.dataset.id===idx);});
-  if(idx===-1) ctEl.innerHTML=renderWeather();
-  else if(idx===-2){ ctEl.innerHTML=renderChecklist(); setTimeout(restoreChk,50); }
-  else if(idx===0) ctEl.innerHTML=renderOverview();
-  else ctEl.innerHTML=renderDay(idx);
-  setTimeout(function(){ showDay(idx===-1?0:idx); }, 100);
-  window.scrollTo({top:0,behavior:'instant'}); ctEl.scrollTop=0; document.documentElement.scrollTop=0;
+function go(idx) {
+  cur = idx;
+  tabsEl.querySelectorAll('.tab').forEach(function(b) { b.classList.toggle('active', +b.dataset.id === idx); });
+  if (idx === -1) ctEl.innerHTML = renderWeather();
+  else if (idx === -2) { ctEl.innerHTML = renderChecklist(); setTimeout(restoreChk, 50); }
+  else if (idx === 0) ctEl.innerHTML = renderOverview();
+  else ctEl.innerHTML = renderDay(idx);
+  window.scrollTo({top: 0, behavior: 'instant'});
+  ctEl.scrollTop = 0;
+  document.documentElement.scrollTop = 0;
+  showDay(idx === -1 ? 0 : idx);
 }
 
-var tabItems=[{id:0,label:'总览'}];
-(DATA.days||[]).forEach(function(d){tabItems.push({id:d.id,label:d.label});});
-if(DATA.weather) tabItems.push({id:-1,label:'天气'});
-if(DATA.checklist) tabItems.push({id:-2,label:'清单'});
-tabItems.forEach(function(t){
-  var btn=document.createElement('button');
-  btn.className='tab'+(t.id===0?' active':''); btn.dataset.id=t.id; btn.textContent=t.label;
-  btn.addEventListener('click',function(){go(t.id);});
+var tabItems = [{id: 0, label: 'OVERVIEW'}];
+(DATA.days || []).forEach(function(d) { tabItems.push({id: d.id, label: d.label}); });
+if (DATA.weather) tabItems.push({id: -1, label: 'WEATHER'});
+if (DATA.checklist) tabItems.push({id: -2, label: 'CHECKLIST'});
+tabItems.forEach(function(t) {
+  var btn = document.createElement('button');
+  btn.className = 'tab' + (t.id === 0 ? ' active' : '');
+  btn.dataset.id = t.id;
+  btn.textContent = t.label;
+  btn.addEventListener('click', function() { go(t.id); });
   tabsEl.appendChild(btn);
 });
-go(0);
-setTimeout(function(){ if(typeof initMap==="function") initMap(); }, 500);
-/* MAP_INIT_CALL */
 
-// QR
-function toggleShare(){
-  var ov=document.getElementById('qrOverlay');
-  if(ov.classList.contains('show')){ closeShare(); return; }
-  var url=SHARE_URL||window.location.href;
-  if(url.indexOf('file://')===0){ document.getElementById('qrUrl').textContent='本地文件无法生成二维码，请用 --serve 启动'; ov.classList.add('show'); return; }
-  document.getElementById('qrUrl').textContent=url;
-  var img=document.createElement('img'); img.id='qrImg'; img.width=220; img.height=220; img.style.borderRadius='12px';
-  img.src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(url);
-  img.onload=function(){ document.getElementById('qrCanvas').style.display='none'; };
-  document.getElementById('qrCanvas').insertAdjacentElement('afterend',img);
-  ov.classList.add('show');
-}
-function closeShare(){ document.getElementById('qrOverlay').classList.remove('show'); var i=document.getElementById('qrImg'); if(i) i.remove(); document.getElementById('qrCanvas').style.display=''; }
-
-// Nav action sheet
-var asOverlay=document.getElementById('asOverlay'), asOpts=document.getElementById('asOpts');
-function openNav(name,lat,lng){
-  var enc=encodeURIComponent(name); asOpts.innerHTML='';
-  [['Apple Maps','https://maps.apple.com/?daddr='+lat+','+lng+'&dirflg=w'],
-   ['Google Maps','https://www.google.com/maps/dir/?api=1&destination='+lat+','+lng+'&travelmode=transit'],
-   ['高德地图','https://uri.amap.com/navigation?to='+lng+','+lat+','+enc+'&mode=car&coordinate=wgs84']]
-  .forEach(function(u){ var b=document.createElement('button'); b.textContent=u[0]; b.addEventListener('click',function(){window.open(u[1]);closeNav();}); asOpts.appendChild(b); });
+var asOverlay = document.getElementById('asOverlay'), asOpts = document.getElementById('asOpts');
+function openNav(name, lat, lng) {
+  var enc = encodeURIComponent(name);
+  asOpts.innerHTML = '';
+  [
+    ['Apple Maps', 'https://maps.apple.com/?daddr=' + lat + ',' + lng + '&dirflg=w'],
+    ['Google Maps', 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '&travelmode=transit'],
+    ['AMAP', 'https://uri.amap.com/navigation?to=' + lng + ',' + lat + ',' + enc + '&mode=car&coordinate=wgs84']
+  ].forEach(function(u) {
+    var b = document.createElement('button');
+    b.textContent = u[0];
+    b.addEventListener('click', function() { window.open(u[1]); closeNav(); });
+    asOpts.appendChild(b);
+  });
   asOverlay.classList.add('show');
 }
-function closeNav(){asOverlay.classList.remove('show');}
-asOverlay.addEventListener('click',function(e){if(e.target===asOverlay)closeNav();});
-</script>
+function closeNav() { asOverlay.classList.remove('show'); }
+asOverlay.addEventListener('click', function(e) { if (e.target === asOverlay) closeNav(); });
 
+go(0);
+setTimeout(initMap, 500);
+</script>
 </body>
 </html>
