@@ -246,7 +246,7 @@ body{
 <script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 </head>
 <body>
-<div id="map"></div>
+<div id="map"></div><div id="debug" style="position:fixed;bottom:10px;left:10px;z-index:99999;background:#000;color:#0f0;padding:8px;font-size:11px;max-width:90vw;border-radius:6px;opacity:.8"></div>
 <div class="tabs" id="tabs"></div>
 <div class="content" id="content"></div>
 <div class="as-overlay" id="asOverlay">
@@ -273,8 +273,9 @@ var SHARE_URL = "";
 
 var map=null,allCoords=[],markers=[],polylines=[];
 
-function initMap(){
-  if(map||typeof L==='undefined') return;
+function log(s){var d=document.getElementById("debug");if(d)d.textContent+=s+"
+";}function initMap(){
+  log("initMap start");if(map||typeof L==='undefined'){log("initMap blocked: map="+!!map+" L="+typeof L);return;}
   try{
     map=L.map('map',{center:[39.92,116.42],zoom:12,zoomControl:false});L.control.zoom({position:'topright'}).addTo(map);
     // 高德瓦片
@@ -283,7 +284,7 @@ function initMap(){
     }).addTo(map);
     
     document.getElementById('mapStatus').style.display='none';
-    showDay(cur||0);
+    log("calling showDay("+(cur||0)+") pois="+DATA.pois.length+" routes="+(DATA.routes||[]).length);showDay(cur||0);log("showDay done");
   }catch(e){ document.getElementById('mapStatus').style.display='block'; document.getElementById('mapStatus').textContent='Map: '+e.message; }
 }
 
@@ -298,7 +299,7 @@ DATA.pois.forEach(function(p){ if(p.lat) allCoords.push([p.lat,p.lng]); });
 
 function showDay(idx){
   if(!map) return;
-  var dayPois=idx===0?DATA.pois:DATA.pois.filter(function(p){return p.day===idx;});
+  log("showDay idx="+idx+" pois="+(idx===0?DATA.pois:DATA.pois.filter(function(p){return p.day===idx;})).length+" routes="+(idx===0?(DATA.routes||[]):(DATA.routes||[]).filter(function(r){return r.day===idx;})).length);var dayPois=idx===0?DATA.pois:DATA.pois.filter(function(p){return p.day===idx;});
   var dayRoutes=idx===0?(DATA.routes||[]):(DATA.routes||[]).filter(function(r){return r.day===idx;});
   var coords=[];
   dayPois.forEach(function(p){
