@@ -24,7 +24,7 @@ body{
   overflow-x:hidden;font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Microsoft YaHei",sans-serif;
   background:linear-gradient(135deg,#e8ecf1 0%,#f0f2f5 30%,#faf5f0 70%,#f0eef4 100%);
   background-attachment:fixed;color:var(--text);line-height:1.55;
-  -webkit-font-smoothing:antialiased;overscroll-behavior:none;overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;-webkit-font-smoothing:antialiased;overflow-x:hidden;
 }
 #map{width:100%;height:40vh;min-height:280px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
 .tabs{
@@ -33,7 +33,7 @@ body{
   background:rgba(255,255,255,.78);backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
   border-bottom:1px solid rgba(255,255,255,.5);
-  scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);
+  scrollbar-width:none;border-bottom:1px solid rgba(255,255,255,.5);mask-image:linear-gradient(to right,#000 85%,transparent);
   -webkit-mask-image:linear-gradient(to right,#000 85%,transparent);
 }
 .tabs::-webkit-scrollbar{display:none}
@@ -274,16 +274,18 @@ var SHARE_URL = "";
 
 var map=null,allCoords=[],markers=[],polylines=[];
 
-<script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>
 function initMap(){
   if(map||typeof L==='undefined') return;
   try{
-    map=L.map('map').setView([39.92,116.42],12);
+    map=L.map('map',{center:[39.92,116.42],zoom:12,zoomControl:false});L.control.zoom({{position:'topright'}}).addTo(map);
     // 高德瓦片
-    L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',{maxZoom:18}).addTo(map);
+    L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}',{
+      maxZoom:18,attribution:'&copy; 高德'
+    }).addTo(map);
     // OSM 备用瓦片（防止高德被墙）
-    
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      maxZoom:18,attribution:'&copy; 高德'
+    }).addTo(map);
     document.getElementById('mapStatus').style.display='none';
     showDay(cur||0);
   }catch(e){ document.getElementById('mapStatus').style.display='block'; document.getElementById('mapStatus').textContent='Map: '+e.message; }
@@ -482,8 +484,6 @@ function restoreChk(){
   for(var i=0;i<localStorage.length;i++){ var k=localStorage.key(i); if(k.indexOf('chk_')===0){ var el=document.querySelector('[data-chk="'+k+'"]'); if(el) el.classList.add('done'); } }
 }
 
-</script>
-<script>
 function go(idx){
   cur=idx;
   tabsEl.querySelectorAll('.tab').forEach(function(b){b.classList.toggle('active',+b.dataset.id===idx);});
@@ -505,7 +505,7 @@ tabItems.forEach(function(t){
   btn.addEventListener('click',function(){go(t.id);});
   tabsEl.appendChild(btn);
 });
-go(0);
+go(0); setTimeout(function(){ if(typeof initMap==="function") initMap(); }, 500);
 setTimeout(function(){{ if(typeof initMap==='function') initMap(); }}, 300);
 
 // QR
