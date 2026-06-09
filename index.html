@@ -390,9 +390,9 @@ function renderOverview() {
     h += '<div class="sec-head">应急信息</div>';
     var em = DATA.emergency;
     h += '<div class="emer-card"><div class="desc">';
-    if (em.police) h += 'POLICE: ' + em.police + ' · ';
-    if (em.ambulance) h += 'AMBULANCE: ' + em.ambulance + '<br>';
-    if (em.hospital) h += 'HOSPITAL: ' + em.hospital;
+    if (em.police) h += '报警: ' + em.police + ' · ';
+    if (em.ambulance) h += '急救: ' + em.ambulance + '<br>';
+    if (em.hospital) h += '医院: ' + em.hospital;
     h += '</div></div>';
   }
 
