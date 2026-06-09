@@ -23,7 +23,7 @@ body{
   background-attachment:fixed;color:var(--text);line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
-#map{width:100%;height:40vh;min-height:280px;position:sticky;top:0;z-index:100;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+#map{width:100%;height:40vh;min-height:280px;position:sticky;top:0;z-index:100;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);transition:height 0.35s cubic-bezier(0.22,1,0.36,1)}
 .tabs{
   display:flex;gap:6px;padding:10px 14px;overflow-x:auto;overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
@@ -240,10 +240,17 @@ body{
 .wx-bar-wrap{flex:1;height:5px;background:rgba(0,0,0,.06);border-radius:3px;min-width:60px}
 .wx-bar{height:100%;border-radius:3px;
   background:linear-gradient(90deg,#5e9cff,#3b82f6,#f59e0b,#ef4444)}
+.map-toggle-btn{position:fixed;bottom:24px;right:16px;z-index:210;width:46px;height:46px;border-radius:50%;background:var(--glass-strong);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,.5);box-shadow:var(--shadow-lg);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;touch-action:manipulation;user-select:none;-webkit-user-select:none;transition:transform 0.35s cubic-bezier(0.22,1,0.36,1),bottom 0.35s cubic-bezier(0.22,1,0.36,1),box-shadow 0.35s;-webkit-tap-highlight-color:transparent}
+.map-toggle-btn:active{transform:scale(0.9);box-shadow:var(--shadow-sm)}
+body.map-full #map{position:fixed;top:0;left:0;width:100%;height:100vh;height:100dvh;z-index:200;border-radius:0;box-shadow:none}
+body.map-full .tabs{position:fixed;top:auto;bottom:0;z-index:201;background:rgba(255,255,255,.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.4);border-bottom:none;padding-bottom:calc(10px + var(--safe-b))}
+body.map-full .content{display:none}
+body.map-full .map-toggle-btn{bottom:calc(72px + var(--safe-b))}
 </style>
 </head>
 <body>
 <div id="map"></div>
+<button id="mapToggle" class="map-toggle-btn" aria-label="全屏地图">🗺️</button>
 <div class="tabs" id="tabs"></div>
 <div class="content" id="content"></div>
 <div class="as-overlay" id="asOverlay">
@@ -592,6 +599,20 @@ function openNav(name, lat, lng) {
 function closeNav() { asOverlay.classList.remove('show'); }
 asOverlay.addEventListener('click', function(e) { if (e.target === asOverlay) closeNav(); });
 
+// 全屏地图切换
+var mapToggleBtn = document.getElementById('mapToggle');
+var isMapFull = false;
+mapToggleBtn.addEventListener('click', function() {
+  isMapFull = !isMapFull;
+  if (isMapFull) {
+    document.body.classList.add('map-full');
+    mapToggleBtn.textContent = '📋';
+  } else {
+    document.body.classList.remove('map-full');
+    mapToggleBtn.textContent = '🗺️';
+  }
+  setTimeout(function() { if (map) map.invalidateSize(); }, 380);
+});
 go(0);
 setTimeout(initMap, 500);
 </script>
