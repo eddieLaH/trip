@@ -412,7 +412,7 @@ function renderDay(idx) {
     if (l.alert) h += '<div class="card-alert">' + l.alert + '</div>';
     var btns = '';
     if (l.lat) btns += '<button class="cbtn nav" data-lat="' + l.lat + '" data-lng="' + l.lng + '" data-name="' + l.name.replace(/"/g, '&quot;') + '">导航</button>';
-    if (l.xhs) btns += '<a class="cbtn xhs" href="' + l.xhs + '" target="_blank">小红书</a>';
+    if (l.xhs) btns += '<button class="cbtn xhs" data-xhs="' + l.xhs + '">小红书</button>';
     if (l.dianping) btns += '<a class="cbtn dp" href="' + l.dianping + '" target="_blank">点评</a>';
     if (l.reserve) btns += '<a class="cbtn rsv" href="' + l.reserve + '" target="_blank">预约</a>';
     if (btns) h += '<div class="btn-row">' + btns + '</div>';
@@ -494,6 +494,27 @@ ctEl.addEventListener('click', function(e) {
   var key = item.dataset.chk, isDone = item.classList.contains('done');
   if (isDone) { item.classList.remove('done'); localStorage.removeItem(key); }
   else { item.classList.add('done'); localStorage.setItem(key, '1'); }
+});
+
+// XHS button handler
+ctEl.addEventListener('click', function(e) {
+  var xhsBtn = e.target.closest('.cbtn.xhs');
+  if (xhsBtn) {
+    e.preventDefault();
+    var url = xhsBtn.dataset.xhs;
+    var appUrl = url.replace('https://www.xiaohongshu.com/search_result?keyword=', 'xhsdiscover://search/result?keyword=');
+    // Try app first
+    var start = Date.now();
+    var iframe = document.createElement('iframe');
+    iframe.style.display = 'none';
+    iframe.src = appUrl;
+    document.body.appendChild(iframe);
+    setTimeout(function() {
+      document.body.removeChild(iframe);
+      if (Date.now() - start < 1500) { window.open(url); }
+    }, 1000);
+    return;
+  }
 });
 
 ctEl.addEventListener('click', function(e) {
