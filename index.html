@@ -343,7 +343,7 @@ function renderOverview() {
   h += '</div>';
 
   var dc = ['', '#4f46e5', '#f59e0b', '#10b981', '#ef4444', '#8b5cf6'];
-  h += '<div class="sec-head">DAYS</div>';
+  h += '<div class="sec-head">行程概览</div>';
   (DATA.days || []).forEach(function(d) {
     var clr = dc[d.id] || '#6b7280';
     h += '<div class="day-preview" onclick="go(' + d.id + ')"><div class="dp-dot" style="background:' + clr + '">D' + d.id + '</div>';
@@ -353,9 +353,9 @@ function renderOverview() {
 
   if (DATA.budget_table) {
     var bt = DATA.budget_table;
-    h += '<div class="sec-head">BUDGET</div><div class="budget-wrap"><div class="budget-title">TOTAL</div>';
+    h += '<div class="sec-head">预算明细</div><div class="budget-wrap"><div class="budget-title">合计</div>';
     h += '<table class="meal-table"><thead><tr>';
-    (bt.cols || ['CATEGORY', 'DETAIL', 'AMOUNT']).forEach(function(c) { h += '<th>' + c + '</th>'; });
+    (bt.cols || ['类别', '明细', '金额']).forEach(function(c) { h += '<th>' + c + '</th>'; });
     h += '</tr></thead><tbody>';
     (bt.rows || []).forEach(function(r, i) {
       h += '<tr' + (i === bt.rows.length - 1 ? ' class="total-row"' : '') + '>';
@@ -369,7 +369,7 @@ function renderOverview() {
 
   if (DATA.meals) {
     var mc = {烤鸭:'#ef4444', 涮肉:'#f59e0b', 小吃:'#10b981', 西餐:'#8b5cf6'};
-    h += '<div class="sec-head">FOOD</div><div class="meal-list">';
+    h += '<div class="sec-head">美食清单</div><div class="meal-list">';
     DATA.meals.forEach(function(m) {
       var clr = mc[m.type] || '#6b7280';
       h += '<div class="meal-card"><div class="m-icon" style="background:' + clr + '18;color:' + clr + '">S</div>';
@@ -382,12 +382,12 @@ function renderOverview() {
   }
 
   if (DATA.warnings) {
-    h += '<div class="sec-head">WARNINGS</div>';
+    h += '<div class="sec-head">避坑指南</div>';
     DATA.warnings.forEach(function(w) { h += '<div class="warn-card"><div class="trap">' + w.trap + '</div><div class="fix">' + w.fix + '</div></div>'; });
   }
 
   if (DATA.emergency) {
-    h += '<div class="sec-head">EMERGENCY</div>';
+    h += '<div class="sec-head">应急信息</div>';
     var em = DATA.emergency;
     h += '<div class="emer-card"><div class="desc">';
     if (em.police) h += 'POLICE: ' + em.police + ' · ';
@@ -397,7 +397,7 @@ function renderOverview() {
   }
 
   if (DATA.links) {
-    h += '<div class="sec-head">LINKS</div><div class="lnk-row">';
+    h += '<div class="sec-head">快捷链接</div><div class="lnk-row">';
     DATA.links.forEach(function(l) { h += '<a class="lnk-btn ' + l.type + '" href="' + l.url + '" target="_blank">' + l.label + '</a>'; });
     h += '</div>';
   }
