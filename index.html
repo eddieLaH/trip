@@ -283,9 +283,7 @@ function initMap(){
       maxZoom:18
     }).addTo(map);
     // OSM 备用瓦片（防止高德被墙）
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-      maxZoom:18
-    }).addTo(map);
+    
     document.getElementById('mapStatus').style.display='none';
     showDay(cur||0);
   }catch(e){ document.getElementById('mapStatus').style.display='block'; document.getElementById('mapStatus').textContent='Map: '+e.message; }
