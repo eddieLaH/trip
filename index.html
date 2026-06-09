@@ -223,6 +223,23 @@ body{
   box-shadow:none!important;font-size:10px!important;font-weight:700!important;
   color:#fff!important;padding:0!important}
 .day-tooltip::before{display:none!important}
+/* 苹果风格天气 */
+.wx-now{text-align:center;padding:16px 0}
+.wx-emoji{font-size:56px;margin-bottom:4px}
+.wx-temp{font-size:52px;font-weight:200;letter-spacing:-.02em;color:var(--text)}
+.wx-range{font-size:14px;color:var(--text2);margin-top:4px}
+.wx-forecast{background:var(--glass-strong);backdrop-filter:blur(14px);
+  -webkit-backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.6);
+  border-radius:var(--radius);padding:12px 18px;box-shadow:var(--shadow-lg)}
+.wx-row{display:flex;align-items:center;gap:8px;padding:10px 0}
+.wx-row+.wx-row{border-top:1px solid var(--sep)}
+.wx-day{width:40px;font-size:13px;font-weight:600;flex-shrink:0}
+.wx-icon{font-size:20px;width:32px;text-align:center;flex-shrink:0}
+.wx-lo{font-size:13px;color:var(--text3);width:32px;text-align:right;flex-shrink:0}
+.wx-hi{font-size:13px;font-weight:600;width:32px;flex-shrink:0}
+.wx-bar-wrap{flex:1;height:5px;background:rgba(0,0,0,.06);border-radius:3px;min-width:60px}
+.wx-bar{height:100%;border-radius:3px;
+  background:linear-gradient(90deg,#5e9cff,#3b82f6,#f59e0b,#ef4444)}
 </style>
 </head>
 <body>
@@ -320,7 +337,7 @@ function renderOverview() {
   var h = '<div class="hero"><h1>北京·四日</h1><p class="sub">6月9日—13日 · 两人 · 环球影城、故宫、颐和园</p></div>';
   h += '<div class="info-grid">';
   var info = DATA.overview || {};
-  [['DATE', info.dates], ['FLIGHT', info.flight], ['HOTEL', info.hotel], ['BUDGET', info.budget], ['PACE', info.pace]]
+  [['日期', info.dates], ['航班', info.flight], ['酒店', info.hotel], ['预算明细', info.budget], ['节奏', info.pace]]
     .filter(function(x) { return x[1]; })
     .forEach(function(x) { h += '<div class="info-chip"><div class="label">' + x[0] + '</div><div class="value">' + x[1] + '</div></div>'; });
   h += '</div>';
@@ -351,7 +368,7 @@ function renderOverview() {
   }
 
   if (DATA.meals) {
-    var mc = {COOKED_DUCK:'#ef4444', HOTPOT:'#f59e0b', SNACK:'#10b981', WESTERN:'#8b5cf6'};
+    var mc = {烤鸭:'#ef4444', 涮肉:'#f59e0b', 小吃:'#10b981', 西餐:'#8b5cf6'};
     h += '<div class="sec-head">FOOD</div><div class="meal-list">';
     DATA.meals.forEach(function(m) {
       var clr = mc[m.type] || '#6b7280';
@@ -398,13 +415,13 @@ function renderDay(idx) {
     if (l.budget) h += '<div class="budget">' + l.budget + '</div>';
     if (l.alert) h += '<div class="card-alert">' + l.alert + '</div>';
     var btns = '';
-    if (l.lat) btns += '<button class="cbtn nav" data-lat="' + l.lat + '" data-lng="' + l.lng + '" data-name="' + l.name.replace(/"/g, '&quot;') + '">NAV</button>';
-    if (l.xhs) btns += '<a class="cbtn xhs" href="' + l.xhs + '" target="_blank">XHS</a>';
-    if (l.dianping) btns += '<a class="cbtn dp" href="' + l.dianping + '" target="_blank">DP</a>';
-    if (l.reserve) btns += '<a class="cbtn rsv" href="' + l.reserve + '" target="_blank">RSV</a>';
+    if (l.lat) btns += '<button class="cbtn nav" data-lat="' + l.lat + '" data-lng="' + l.lng + '" data-name="' + l.name.replace(/"/g, '&quot;') + '">导航</button>';
+    if (l.xhs) btns += '<a class="cbtn xhs" href="' + l.xhs + '" target="_blank">小红书</a>';
+    if (l.dianping) btns += '<a class="cbtn dp" href="' + l.dianping + '" target="_blank">点评</a>';
+    if (l.reserve) btns += '<a class="cbtn rsv" href="' + l.reserve + '" target="_blank">预约</a>';
     if (btns) h += '<div class="btn-row">' + btns + '</div>';
     if (l.pay) {
-      var pl = {alipay:'ALIPAY', wechat:'WECHAT', cash:'CASH', card:'CARD'};
+      var pl = {alipay:'支付宝', wechat:'微信', cash:'现金', card:'刷卡'};
       var ps = {1:'ok', 0.5:'idk', 0:'no'}, ph = '<div class="pay-row">';
       for (var k in l.pay) { var s = ps[l.pay[k]] || 'idk'; ph += '<span class="pay-chip ' + s + '">' + (pl[k] || k) + '</span>'; }
       h += ph + '</div>';
@@ -417,22 +434,50 @@ function renderDay(idx) {
 function renderWeather() {
   var w = DATA.weather;
   var today = new Date(); today.setHours(0, 0, 0, 0);
-  var startIdx = 0;
+  var startIdx = 0, minDiff = Infinity;
   w.daily.forEach(function(d, i) {
     var dd = new Date(d.date + 'T00:00:00');
-    if (Math.abs(dd - today) < Math.abs(new Date(w.daily[startIdx].date + 'T00:00:00') - today)) startIdx = i;
+    var diff = Math.abs(dd - today);
+    if (diff < minDiff) { minDiff = diff; startIdx = i; }
   });
   var days = w.daily.slice(startIdx, startIdx + 4);
-  var h = '<div class="hero"><h1>' + w.city + '</h1><p class="sub">WEATHER</p></div><div class="weather-card">';
-  h += '<div class="w-main"><div class="w-icon">' + days[0].high + '/' + days[0].low + '</div>';
-  h += '<div class="w-info"><div class="w-temp">' + days[0].high + ' / ' + days[0].low + '</div><div class="w-desc">TODAY</div></div></div>';
-  h += '<div class="w-forecast">';
-  days.forEach(function(d, i) {
-    h += '<div class="w-day"><div class="w-dname">' + (i === 0 ? 'TODAY' : (d.date || '').slice(5)) + '</div><div class="w-dtemp">' + d.high + ' <span>' + d.low + '</span></div></div>';
-  });
-  return h + '</div></div>';
-}
 
+  var allTemps = [];
+  days.forEach(function(d) { allTemps.push(d.high); allTemps.push(d.low); });
+  var tMin = Math.min.apply(null, allTemps);
+  var tMax = Math.max.apply(null, allTemps);
+  var tRange = tMax - tMin || 1;
+
+  var wEmoji = {0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',53:'🌧️',61:'🌧️',80:'🌧️',95:'⛈️'};
+  var wLabel = {0:'晴',1:'少云',2:'多云',3:'阴',45:'雾',51:'小雨',53:'小雨',61:'中雨',80:'阵雨',95:'雷暴'};
+
+  var h = '<div class="hero"><h1>' + w.city + '</h1><p class="sub">天气预报</p></div>';
+  var t = days[0];
+  h += '<div class="wx-now">';
+  h += '<div class="wx-emoji">' + (wEmoji[t.code] || '🌡️') + '</div>';
+  h += '<div class="wx-temp">' + t.high + '°</div>';
+  h += '<div class="wx-range">' + (wLabel[t.code] || '') + '  ' + t.low + '° ~ ' + t.high + '°</div>';
+  h += '</div>';
+
+  h += '<div class="wx-forecast">';
+  days.forEach(function(d, i) {
+    var lb = i === 0 ? '今天' : (d.date || '').slice(5);
+    var leftPct = Math.round((d.low - tMin) / tRange * 100);
+    var widthPct = Math.round((d.high - d.low) / tRange * 100);
+    if (widthPct < 8) widthPct = 8;
+    if (leftPct < 0) leftPct = 0;
+    if (leftPct + widthPct > 100) widthPct = 100 - leftPct;
+
+    h += '<div class="wx-row">';
+    h += '<div class="wx-day">' + lb + '</div>';
+    h += '<div class="wx-icon">' + (wEmoji[d.code] || '🌡️') + '</div>';
+    h += '<div class="wx-lo">' + d.low + '°</div>';
+    h += '<div class="wx-bar-wrap"><div class="wx-bar" style="margin-left:' + leftPct + '%;width:' + widthPct + '%"></div></div>';
+    h += '<div class="wx-hi">' + d.high + '°</div>';
+    h += '</div>';
+  });
+  return h + '</div>';
+}
 function renderChecklist() {
   var h = '<div class="hero"><h1>CHECKLIST</h1><p class="sub"><button class="chk-all-btn" id="chkAllBtn" onclick="toggleAllChk()">TOGGLE ALL</button></p></div>';
   var groups = DATA.checklist;
@@ -470,7 +515,7 @@ function toggleAllChk() {
     else { el.classList.add('done'); localStorage.setItem(el.dataset.chk, '1'); }
   });
   var btn = document.getElementById('chkAllBtn');
-  if (btn) btn.textContent = allDone ? 'ALL CHECK' : 'ALL CLEAR';
+  if (btn) btn.textContent = allDone ? '全部勾选' : '全部取消';
 }
 
 function restoreChk() {
@@ -496,10 +541,10 @@ function go(idx) {
   showDay(idx === -1 ? 0 : idx);
 }
 
-var tabItems = [{id: 0, label: 'OVERVIEW'}];
+var tabItems = [{id: 0, label: '总览'}];
 (DATA.days || []).forEach(function(d) { tabItems.push({id: d.id, label: d.label}); });
-if (DATA.weather) tabItems.push({id: -1, label: 'WEATHER'});
-if (DATA.checklist) tabItems.push({id: -2, label: 'CHECKLIST'});
+if (DATA.weather) tabItems.push({id: -1, label: '天气'});
+if (DATA.checklist) tabItems.push({id: -2, label: '清单'});
 tabItems.forEach(function(t) {
   var btn = document.createElement('button');
   btn.className = 'tab' + (t.id === 0 ? ' active' : '');
@@ -516,7 +561,7 @@ function openNav(name, lat, lng) {
   [
     ['Apple Maps', 'https://maps.apple.com/?daddr=' + lat + ',' + lng + '&dirflg=w'],
     ['Google Maps', 'https://www.google.com/maps/dir/?api=1&destination=' + lat + ',' + lng + '&travelmode=transit'],
-    ['AMAP', 'https://uri.amap.com/navigation?to=' + lng + ',' + lat + ',' + enc + '&mode=car&coordinate=wgs84']
+    ['高德地图', 'https://uri.amap.com/navigation?to=' + lng + ',' + lat + ',' + enc + '&mode=car&coordinate=wgs84']
   ].forEach(function(u) {
     var b = document.createElement('button');
     b.textContent = u[0];
