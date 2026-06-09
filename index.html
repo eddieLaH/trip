@@ -500,8 +500,8 @@ tabItems.forEach(function(t){
   btn.addEventListener('click',function(){go(t.id);});
   tabsEl.appendChild(btn);
 });
-go(0);
-setTimeout(function(){{ if(typeof initMap==='function') initMap(); }}, 300);
+go(0);setTimeout(initMap,400);
+
 
 // QR
 function toggleShare(){
