@@ -317,9 +317,9 @@ function showDay(idx){
   dayRoutes.forEach(function(r){
     var f=DATA.pois.find(function(p){return p.name===r.from;});
     var t=DATA.pois.find(function(p){return p.name===r.to;});
-    if(!f||!t) return;
+    if(!f||!t){console.log("Route no match:",r.from,r.to);return;}
     var color=DAY_COLORS[r.day]||'#999';
-    var line=L.polyline([[f.lat,f.lng],[t.lat,t.lng]],{color:color,weight:2.5,opacity:.55,dashArray:'8,5'}).addTo(map);
+    console.log("Route:",r.from,"→",r.to);var line=L.polyline([[f.lat,f.lng],[t.lat,t.lng]],{color:color,weight:2.5,opacity:.55,dashArray:'8,5'}).addTo(map);
     polylines.push(line);
     var mlat=(f.lat+t.lat)/2, mlng=(f.lng+t.lng)/2;
     var badge=L.circleMarker([mlat,mlng],{radius:12,color:'#fff',weight:2,fillColor:color,fillOpacity:.9}).addTo(map);
