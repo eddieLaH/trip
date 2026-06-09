@@ -26,13 +26,13 @@ body{
   background-attachment:fixed;color:var(--text);line-height:1.55;
   -webkit-font-smoothing:antialiased;overscroll-behavior:none;
 }
-#map{width:100%;height:40vh;min-height:280px;position:sticky;top:0;z-index:100;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+#map{width:100%;height:40vh;min-height:280px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
 .tabs{
   display:flex;gap:6px;padding:10px 14px;overflow-x:auto;overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
   background:rgba(255,255,255,.78);backdrop-filter:blur(20px);
   -webkit-backdrop-filter:blur(20px);
-  position:sticky;top:40vh;z-index:99;border-bottom:1px solid rgba(255,255,255,.5);
+  border-bottom:1px solid rgba(255,255,255,.5);
   scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);
   -webkit-mask-image:linear-gradient(to right,#000 85%,transparent);
 }
@@ -283,7 +283,9 @@ function initMap(){
       subdomains:'1234',maxZoom:18,attribution:'&copy; 高德'
     }).addTo(map);
     // OSM 备用瓦片（防止高德被墙）
-    
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
+      subdomains:'1234',maxZoom:18,attribution:'&copy; 高德'
+    }).addTo(map);
     document.getElementById('mapStatus').style.display='none';
     showDay(cur||0);
   }catch(e){ document.getElementById('mapStatus').style.display='block'; document.getElementById('mapStatus').textContent='Map: '+e.message; }
