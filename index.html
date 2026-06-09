@@ -479,7 +479,7 @@ function renderWeather() {
   return h + '</div>';
 }
 function renderChecklist() {
-  var h = '<div class="hero"><h1>CHECKLIST</h1><p class="sub"><button class="chk-all-btn" id="chkAllBtn" onclick="toggleAllChk()">TOGGLE ALL</button></p></div>';
+  var h = '<div class="hero"><h1>物资清单</h1><p class="sub"><button class="chk-all-btn" id="chkAllBtn" onclick="toggleAllChk()">全部勾选</button></p></div>';
   var groups = DATA.checklist;
   Object.keys(groups).forEach(function(g) {
     h += '<div class="chk-group"><div class="chk-title">' + g + '</div><div class="chk-items">';
