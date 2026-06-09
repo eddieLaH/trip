@@ -298,7 +298,6 @@ DATA.pois.forEach(function(p){ if(p.lat) allCoords.push([p.lat,p.lng]); });
 
 function showDay(idx){
   if(!map) return;
-  clearMap();
   var dayPois=idx===0?DATA.pois:DATA.pois.filter(function(p){return p.day===idx;});
   var dayRoutes=idx===0?(DATA.routes||[]):(DATA.routes||[]).filter(function(r){return r.day===idx;});
   var coords=[];
