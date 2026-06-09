@@ -279,7 +279,7 @@ function initMap(){
   try{
     map=L.map('map').setView([39.92,116.42],12);
     // 高德瓦片
-    L.tileLayer('https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}',{subdomains:'1234',maxZoom:18}).addTo(map);
+    L.tileLayer('https://map.geoq.cn/ArcGIS/rest/services/ChinaOnlineCommunity/MapServer/tile/{z}/{y}/{x}',{subdomains:'1234',maxZoom:16,maxNativeZoom:16,updateWhenIdle:true,keepBuffer:2}).addTo(map);
     // OSM 备用瓦片（防止高德被墙）
     
     document.getElementById('mapStatus').style.display='none';
