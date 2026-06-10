@@ -3,8 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>北京·四日</title>
-<link rel="stylesheet" href="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.css">
 <style>
 :root{
   --bg:#f0f2f5;--glass:rgba(255,255,255,.72);--glass-strong:rgba(255,255,255,.88);
@@ -213,18 +211,6 @@ body{
 .lnk-btn:active{transform:scale(.97);filter:brightness(.9)}
 .lnk-btn.reserve{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff}
 .lnk-btn.app{background:#fff;border:1px solid rgba(0,0,0,.1);color:var(--text)}
-.leaflet-popup-content-wrapper{border-radius:12px;font-family:inherit;box-shadow:0 4px 16px rgba(0,0,0,.15)}
-.leaflet-popup-content{font-size:13px;margin:10px 14px;line-height:1.5}
-.leaflet-control-zoom a{width:36px;height:36px;line-height:36px;border-radius:10px}
-.leaflet-container{background:#f0f2f5}
-.poi-tooltip{background:rgba(255,255,255,.85)!important;border:none!important;
-  box-shadow:0 1px 4px rgba(0,0,0,.1)!important;border-radius:6px!important;
-  font-size:11px!important;font-weight:600!important;color:#333!important;padding:3px 8px!important}
-.poi-tooltip::before{display:none!important}
-.day-tooltip{background:transparent!important;border:none!important;
-  box-shadow:none!important;font-size:10px!important;font-weight:700!important;
-  color:#fff!important;padding:0!important}
-.day-tooltip::before{display:none!important}
 /* 苹果风格天气 */
 .wx-now{text-align:center;padding:16px 0}
 .wx-emoji{font-size:56px;margin-bottom:4px}
@@ -252,9 +238,9 @@ body{
 <div class="day-bar" id="dayBar"></div>
 </div>
 <div class="content" id="content"></div>
-<script src="https://cdn.bootcdn.net/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
-<script>
-var DATA = {"title": "北京·四日", "subtitle": "6月9日—13日 · 两人 · 环球影城、故宫、颐和园", "hotel": "汉庭(鼓楼店) 大床房 ¥280/晚", "center": {"lat": 39.92, "lng": 116.42}, "zoom": 12, "overview": {"dates": "6月9日(晚抵) - 6月13日(晚返)", "flight": "MF8350去 ZH9108返 ¥1,920/2人", "hotel": "环球酒店2晚(6/9-6/11) + 鼓楼汉庭2晚(6/11-6/13)", "budget": "¥6,700 / ¥8,000", "pace": "正常偏紧凑 · 可早起走1-2万步"}, "days": [{"id": 1, "label": "Day1", "date": "6/10 周三", "title": "魔法世界", "locations": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m", "budget": "¥80", "alert": ""}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.8, "lng": 116.67, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球", "budget": "¥200", "alert": "晚到打车直达约¥80 30min · 地铁已停运"}, {"name": "环球影城", "type": "attraction", "lat": 39.79, "lng": 116.675, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎", "budget": "¥638", "alert": "旺季4.2万/天，开园前1.5h到门口", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E7%8E%AF%E7%90%83%E5%BD%B1%E5%9F%8E%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.79, "lng": 116.675, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "budget": "¥120", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E4%B8%89%E6%8A%8A%E6%89%AB%E5%B8%9A%28%E7%8E%AF%E7%90%83%E5%86%85%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E4%B8%89%E6%8A%8A%E6%89%AB%E5%B8%9A%28%E7%8E%AF%E7%90%83%E5%86%85%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "通州万达/附近", "type": "food", "lat": 39.805, "lng": 116.66, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60", "budget": "¥50", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E9%80%9A%E5%B7%9E%E4%B8%87%E8%BE%BE/%E9%99%84%E8%BF%91%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E9%80%9A%E5%B7%9E%E4%B8%87%E8%BE%BE/%E9%99%84%E8%BF%91", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.8, "lng": 116.67, "time": "21:30返回", "desc": "明早退房换到市区", "alert": "明早退房，行李随身"}]}, {"id": 2, "label": "Day2", "date": "6/11 周四", "title": "紫禁红墙", "locations": [{"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李", "budget": "¥8"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280", "budget": "¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380", "budget": "¥380", "alert": "避开99元流水线，选350+精妆", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E6%98%8E%E5%88%B6%E5%A6%86%E9%80%A0%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E6%98%8E%E5%88%B6%E5%A6%86%E9%80%A0"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园", "budget": "¥60", "alert": "提前7天晚8点小程序抢票", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E6%95%85%E5%AE%AB%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷", "budget": "¥50", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E6%95%85%E5%AE%AB%E9%A4%90%E5%8E%85%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E6%95%85%E5%AE%AB%E9%A4%90%E5%8E%85", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48", "budget": "¥130", "alert": "别去故宫店！前门店排20min", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%9B%9B%E5%AD%A3%E6%B0%91%E7%A6%8F%28%E5%89%8D%E9%97%A8%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%9B%9B%E5%AD%A3%E6%B0%91%E7%A6%8F%28%E5%89%8D%E9%97%A8%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 3, "label": "Day3", "date": "6/12 周五", "title": "皇家园林", "locations": [{"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进", "budget": "¥60", "alert": "联票比大门票划算", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E9%A2%90%E5%92%8C%E5%9B%AD%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路", "budget": "¥90", "alert": "这个时间不排队。涮肉天花板", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E8%81%9A%E5%AE%9D%E6%BA%90%28%E7%89%9B%E8%A1%97%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E8%81%9A%E5%AE%9D%E6%BA%90%28%E7%89%9B%E8%A1%97%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "time": "15:00-16:30", "desc": "门票¥20登楼", "budget": "¥20", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E9%BC%93%E6%A5%BC%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费", "budget": "¥0", "alert": "日落后20min蓝调时刻最佳", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E4%BB%80%E5%88%B9%E6%B5%B7%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到", "budget": "¥18", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%A7%9A%E8%AE%B0%E7%82%92%E8%82%9D%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%A7%9A%E8%AE%B0%E7%82%92%E8%82%9D", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 4, "label": "Day4", "date": "6/13 周六", "title": "胡同烟火", "locations": [{"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "08:00退房", "desc": "行李随身", "alert": "最后一天，退房直接去机场"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "time": "09:00-11:00", "desc": "胡同Citywalk", "budget": "¥0", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%8D%97%E9%94%A3%E9%BC%93%E5%B7%B7%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%8D%97%E9%94%A3%E9%BC%93%E5%B7%B7"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "time": "12:00-13:30", "desc": "烤鸭整只¥108", "budget": "¥80", "alert": "整只¥108两人刚好", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%A4%A7%E9%B8%AD%E6%A2%A8%28%E9%BC%93%E6%A5%BC%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%A4%A7%E9%B8%AD%E6%A2%A8%28%E9%BC%93%E6%A5%BC%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "time": "13:30-15:00", "desc": "逛老字号", "budget": "¥0", "alert": "稻香村认准三禾标识", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%89%8D%E9%97%A8/%E5%A4%A7%E6%A0%85%E6%A0%8F%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%89%8D%E9%97%A8/%E5%A4%A7%E6%A0%85%E6%A0%8F"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞", "budget": "¥510"}]}], "routes": [{"from": "大兴机场落地", "to": "环球附近酒店入住", "day": 1}, {"from": "环球附近酒店入住", "to": "环球影城", "day": 1}, {"from": "环球影城", "to": "三把扫帚(环球内)", "day": 1}, {"from": "三把扫帚(环球内)", "to": "通州万达/附近", "day": 1}, {"from": "通州万达/附近", "to": "环球附近酒店", "day": 1}, {"from": "退房前往市区", "to": "汉庭(鼓楼)入住", "day": 2}, {"from": "汉庭(鼓楼)入住", "to": "明制妆造", "day": 2}, {"from": "明制妆造", "to": "故宫", "day": 2}, {"from": "故宫", "to": "故宫餐厅", "day": 2}, {"from": "故宫餐厅", "to": "故宫", "day": 2}, {"from": "故宫", "to": "四季民福(前门)", "day": 2}, {"from": "四季民福(前门)", "to": "汉庭(鼓楼)", "day": 2}, {"from": "汉庭(鼓楼)出发", "to": "颐和园", "day": 3}, {"from": "颐和园", "to": "聚宝源(牛街)", "day": 3}, {"from": "聚宝源(牛街)", "to": "鼓楼", "day": 3}, {"from": "鼓楼", "to": "什刹海", "day": 3}, {"from": "什刹海", "to": "姚记炒肝", "day": 3}, {"from": "姚记炒肝", "to": "汉庭(鼓楼)", "day": 3}, {"from": "汉庭(鼓楼)退房", "to": "南锣鼓巷", "day": 4}, {"from": "南锣鼓巷", "to": "大鸭梨(鼓楼)", "day": 4}, {"from": "大鸭梨(鼓楼)", "to": "前门/大栅栏", "day": 4}, {"from": "前门/大栅栏", "to": "首都机场T3", "day": 4}], "pois": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "day": 1, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m"}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.8, "lng": 116.67, "day": 1, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球"}, {"name": "环球影城", "type": "attraction", "lat": 39.79, "lng": 116.675, "day": 1, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.79, "lng": 116.675, "day": 1, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50"}, {"name": "通州万达/附近", "type": "food", "lat": 39.805, "lng": 116.66, "day": 1, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60"}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.8, "lng": 116.67, "day": 1, "time": "21:30返回", "desc": "明早退房换到市区"}, {"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "day": 2, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "day": 2, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "day": 2, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "day": 2, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷"}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "day": 2, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "day": 3, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "day": 3, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路"}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "day": 3, "time": "15:00-16:30", "desc": "门票¥20登楼"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "day": 3, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "day": 3, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 4, "time": "08:00退房", "desc": "行李随身"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "day": 4, "time": "09:00-11:00", "desc": "胡同Citywalk"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "day": 4, "time": "12:00-13:30", "desc": "烤鸭整只¥108"}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "day": 4, "time": "13:30-15:00", "desc": "逛老字号"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "day": 4, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞"}], "meals": [{"name": "四季民福(前门)", "district": "前门", "type": "烤鸭", "perPerson": "¥130", "dish": "烤鸭半只¥139·芥末鸭掌¥48", "note": "避开故宫店！前门店排队仅20min"}, {"name": "聚宝源(牛街)", "district": "牛街", "type": "涮肉", "perPerson": "¥90", "dish": "手切鲜羊肉¥38·烧饼¥3", "note": "涮肉天花板·晚8点后不排队"}, {"name": "南门涮肉(天坛)", "district": "天坛", "type": "涮肉", "perPerson": "¥85", "dish": "手切羊肉¥42·糖蒜", "note": "性价比最高涮肉"}, {"name": "大鸭梨(鼓楼)", "district": "鼓楼", "type": "烤鸭", "perPerson": "¥80", "dish": "烤鸭整只¥108·京酱肉丝¥38", "note": "平价烤鸭之王"}, {"name": "三把扫帚", "district": "环球影城", "type": "西餐", "perPerson": "¥120", "dish": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "note": "园区内性价比最高"}, {"name": "姚记炒肝", "district": "鼓楼", "type": "小吃", "perPerson": "¥18", "dish": "包子¥3·炒肝¥12", "note": "鼓楼边老店·早餐首选"}, {"name": "护国寺小吃", "district": "地安门", "type": "小吃", "perPerson": "¥15", "dish": "面茶¥6·糖油饼¥4·豌豆黄¥8", "note": "老北京早点一站式"}, {"name": "增盛魁小吃", "district": "东四", "type": "小吃", "perPerson": "¥12", "dish": "糖火烧¥3·豆腐脑¥4", "note": "胡同老味道"}], "budget_table": {"cols": ["类别", "明细", "小计"], "rows": [["大交通", "MF8350去+ZH9108返 ×2人", "¥1,920"], ["住宿", "环球¥200x2+汉庭¥280x2", "¥960"], ["门票", "环球¥638+故宫¥60+颐和园¥60+鼓楼¥20 ×2人", "¥1,556"], ["妆造", "明制汉服精妆", "¥380"], ["餐饮", "4天三餐+零食", "¥755"], ["交通", "地铁+机场线", "¥106"], ["总计", "含弹性", "约¥6,540"]], "total": "¥5,907（缓冲¥800 → 约¥6,700）"}, "warnings": [{"trap": "故宫抢不到票", "fix": "提前7天晚8点准时在\"故宫博物院\"小程序抢，旺季秒没"}, {"trap": "环球排队3h+", "fix": "周四工作日去+开园前1.5h到门口+经济允许买优速通"}, {"trap": "四季民福故宫店排队1000桌", "fix": "去前门店！排队20min味道一样。抖音验证：黄牛号卖50元"}, {"trap": "景区\"老北京炸酱面\"¥38一碗", "fix": "坐地铁2站去胡同吃¥15的"}, {"trap": "全聚德贵(¥280+/人)且味道平庸", "fix": "四季民福/大鸭梨"}, {"trap": "王府井/南锣主街小吃溢價严重", "fix": "去牛街/东四胡同吃地道小吃"}], "emergency": {"police": "110", "ambulance": "120", "hospital": "北大第一医院 · 西城区西什库大街8号"}, "links": [{"label": "故宫预约", "url": "https://gugong.ktmtech.cn/", "type": "reserve"}, {"label": "环球影城App", "url": "https://www.universalbeijingresort.com/", "type": "app"}, {"label": "颐和园预约", "url": "https://www.summerpalace-china.com/", "type": "reserve"}, {"label": "12306购票", "url": "https://www.12306.cn/", "type": "app"}], "weather": {"city": "北京", "daily": [{"code": 1, "high": 32, "low": 19, "date": "2026-06-09"}, {"code": 3, "high": 30, "low": 20, "date": "2026-06-10"}, {"code": 61, "high": 28, "low": 18, "date": "2026-06-11"}, {"code": 1, "high": 31, "low": 19, "date": "2026-06-12"}]}, "checklist": {"证件": ["身份证", "通行证"], "电子设备": ["充电线", "充电宝", "耳机", "相机电池闪光灯"], "洗漱化妆": ["蓬蓬粉", "梳子", "唇膏", "眼药水", "护手霜", "皮炎平", "睫毛夹", "口红眼线", "散粉"], "随身": ["抽纸", "小包纸", "手机挂绳"], "摄影": ["相机", "闪光灯", "CCD"], "配饰": ["项链", "戒指"], "其他": ["水"]}, "cuts": [{"what": "恭王府", "why": "故宫已覆盖皇家建筑，同质化严重，留给下次"}, {"what": "798艺术区", "why": "偏离主路线太远，往返需2h+，天数不够"}, {"what": "长城", "why": "远郊单程1.5h，4天行程放不下，单独留一整天才值得"}, {"what": "天坛", "why": "颐和园已覆盖皇家园林，天坛单独绕路性价比低"}], "sources": [{"platform": "携程", "date": "2026-06-09", "summary": "机票航班号、时刻、票价"}, {"platform": "大众点评", "date": "2026-06-09", "summary": "餐厅评分、人均、排队风险"}, {"platform": "小红书", "date": "2026-06-09", "summary": "餐厅氛围、实拍照片、近期体验"}, {"platform": "抖音", "date": "2026-06-09", "summary": "实时人流、排队情况、本地人反馈"}, {"platform": "高德地图", "date": "2026-06-09", "summary": "POI经纬度、地铁线路、步行距离"}, {"platform": "Open-Meteo", "date": "2026-06-09", "summary": "4天天气预报"}, {"platform": "携程/美团", "date": "2026-06-09", "summary": "酒店名、房型、含税价、评分"}]};
+<script>window._AMapSecurityConfig={securityJsCode:"ece8f2f1e50f49365e130b3805e1787b"}</script>
+<script src="https://webapi.amap.com/maps?v=2.0&key=2ac9fe5f20018ac0483b23ad0ce5b10c"></script>
+<script>var DATA = {"title": "北京·四日", "subtitle": "6月9日—13日 · 两人 · 环球影城、故宫、颐和园", "hotel": "汉庭(鼓楼店) 大床房 ¥280/晚", "center": {"lat": 39.92, "lng": 116.42}, "zoom": 12, "overview": {"dates": "6月9日(晚抵) - 6月13日(晚返)", "flight": "MF8350去 ZH9108返 ¥1,920/2人", "hotel": "环球酒店2晚(6/9-6/11) + 鼓楼汉庭2晚(6/11-6/13)", "budget": "¥6,700 / ¥8,000", "pace": "正常偏紧凑 · 可早起走1-2万步"}, "days": [{"id": 1, "label": "Day1", "date": "6/10 周三", "title": "魔法世界", "locations": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m", "budget": "¥80", "alert": ""}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.847, "lng": 116.679, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球", "budget": "¥200", "alert": "晚到打车直达约¥80 30min · 地铁已停运"}, {"name": "环球影城", "type": "attraction", "lat": 39.8534, "lng": 116.6811, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎", "budget": "¥638", "alert": "旺季4.2万/天，开园前1.5h到门口", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E7%8E%AF%E7%90%83%E5%BD%B1%E5%9F%8E%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.8561, "lng": 116.6858, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "budget": "¥120", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E4%B8%89%E6%8A%8A%E6%89%AB%E5%B8%9A%28%E7%8E%AF%E7%90%83%E5%86%85%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E4%B8%89%E6%8A%8A%E6%89%AB%E5%B8%9A%28%E7%8E%AF%E7%90%83%E5%86%85%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "通州万达/附近", "type": "food", "lat": 39.9058, "lng": 116.6414, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60", "budget": "¥50", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E9%80%9A%E5%B7%9E%E4%B8%87%E8%BE%BE/%E9%99%84%E8%BF%91%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E9%80%9A%E5%B7%9E%E4%B8%87%E8%BE%BE/%E9%99%84%E8%BF%91", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.847, "lng": 116.679, "time": "21:30返回", "desc": "明早退房换到市区", "alert": "明早退房，行李随身"}]}, {"id": 2, "label": "Day2", "date": "6/11 周四", "title": "紫禁红墙", "locations": [{"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李", "budget": "¥8"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280", "budget": "¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380", "budget": "¥380", "alert": "避开99元流水线，选350+精妆", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E6%98%8E%E5%88%B6%E5%A6%86%E9%80%A0%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E6%98%8E%E5%88%B6%E5%A6%86%E9%80%A0"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园", "budget": "¥60", "alert": "提前7天晚8点小程序抢票", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E6%95%85%E5%AE%AB%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷", "budget": "¥50", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E6%95%85%E5%AE%AB%E9%A4%90%E5%8E%85%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E6%95%85%E5%AE%AB%E9%A4%90%E5%8E%85", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48", "budget": "¥130", "alert": "别去故宫店！前门店排20min", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%9B%9B%E5%AD%A3%E6%B0%91%E7%A6%8F%28%E5%89%8D%E9%97%A8%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%9B%9B%E5%AD%A3%E6%B0%91%E7%A6%8F%28%E5%89%8D%E9%97%A8%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 3, "label": "Day3", "date": "6/12 周五", "title": "皇家园林", "locations": [{"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进", "budget": "¥60", "alert": "联票比大门票划算", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E9%A2%90%E5%92%8C%E5%9B%AD%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路", "budget": "¥90", "alert": "这个时间不排队。涮肉天花板", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E8%81%9A%E5%AE%9D%E6%BA%90%28%E7%89%9B%E8%A1%97%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E8%81%9A%E5%AE%9D%E6%BA%90%28%E7%89%9B%E8%A1%97%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "time": "15:00-16:30", "desc": "门票¥20登楼", "budget": "¥20", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E9%BC%93%E6%A5%BC%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费", "budget": "¥0", "alert": "日落后20min蓝调时刻最佳", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E4%BB%80%E5%88%B9%E6%B5%B7%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到", "budget": "¥18", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%A7%9A%E8%AE%B0%E7%82%92%E8%82%9D%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%A7%9A%E8%AE%B0%E7%82%92%E8%82%9D", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "20:00返回", "desc": "步行回酒店"}]}, {"id": 4, "label": "Day4", "date": "6/13 周六", "title": "胡同烟火", "locations": [{"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "time": "08:00退房", "desc": "行李随身", "alert": "最后一天，退房直接去机场"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "time": "09:00-11:00", "desc": "胡同Citywalk", "budget": "¥0", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%8D%97%E9%94%A3%E9%BC%93%E5%B7%B7%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%8D%97%E9%94%A3%E9%BC%93%E5%B7%B7"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "time": "12:00-13:30", "desc": "烤鸭整只¥108", "budget": "¥80", "alert": "整只¥108两人刚好", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%A4%A7%E9%B8%AD%E6%A2%A8%28%E9%BC%93%E6%A5%BC%29%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%A4%A7%E9%B8%AD%E6%A2%A8%28%E9%BC%93%E6%A5%BC%29", "pay": {"alipay": 1, "wechat": 1, "cash": 1, "card": 1}}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "time": "13:30-15:00", "desc": "逛老字号", "budget": "¥0", "alert": "稻香村认准三禾标识", "xhs": "https://www.xiaohongshu.com/search_result?keyword=%E5%89%8D%E9%97%A8/%E5%A4%A7%E6%A0%85%E6%A0%8F%20%E5%8C%97%E4%BA%AC&amp;amp;amp;amp;amp;amp;amp;source=web_explore_feed", "dianping": "dianping://search?keyword=%E5%89%8D%E9%97%A8/%E5%A4%A7%E6%A0%85%E6%A0%8F"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞", "budget": "¥510"}]}], "routes": [{"from": "大兴机场落地", "to": "环球附近酒店入住", "day": 1}, {"from": "环球附近酒店入住", "to": "环球影城", "day": 1}, {"from": "环球影城", "to": "三把扫帚(环球内)", "day": 1}, {"from": "三把扫帚(环球内)", "to": "通州万达/附近", "day": 1}, {"from": "通州万达/附近", "to": "环球附近酒店", "day": 1}, {"from": "退房前往市区", "to": "汉庭(鼓楼)入住", "day": 2}, {"from": "汉庭(鼓楼)入住", "to": "明制妆造", "day": 2}, {"from": "明制妆造", "to": "故宫", "day": 2}, {"from": "故宫", "to": "故宫餐厅", "day": 2}, {"from": "故宫餐厅", "to": "故宫", "day": 2}, {"from": "故宫", "to": "四季民福(前门)", "day": 2}, {"from": "四季民福(前门)", "to": "汉庭(鼓楼)", "day": 2}, {"from": "汉庭(鼓楼)出发", "to": "颐和园", "day": 3}, {"from": "颐和园", "to": "聚宝源(牛街)", "day": 3}, {"from": "聚宝源(牛街)", "to": "鼓楼", "day": 3}, {"from": "鼓楼", "to": "什刹海", "day": 3}, {"from": "什刹海", "to": "姚记炒肝", "day": 3}, {"from": "姚记炒肝", "to": "汉庭(鼓楼)", "day": 3}, {"from": "汉庭(鼓楼)退房", "to": "南锣鼓巷", "day": 4}, {"from": "南锣鼓巷", "to": "大鸭梨(鼓楼)", "day": 4}, {"from": "大鸭梨(鼓楼)", "to": "前门/大栅栏", "day": 4}, {"from": "前门/大栅栏", "to": "首都机场T3", "day": 4}], "pois": [{"name": "大兴机场落地", "type": "transport", "lat": 39.51, "lng": 116.41, "day": 1, "time": "6/9 23:55", "desc": "MF8350 深圳飞北京 · 约3h15m"}, {"name": "环球附近酒店入住", "type": "hotel", "lat": 39.847, "lng": 116.679, "day": 1, "time": "6/10 00:40", "desc": "汉庭(通州)¥200 · 紧邻环球"}, {"name": "环球影城", "type": "attraction", "lat": 39.8534, "lng": 116.6811, "day": 1, "time": "08:30-18:00", "desc": "门票¥638 · 步行即到 · 哈利波特+霸天虎"}, {"name": "三把扫帚(环球内)", "type": "food", "lat": 39.8561, "lng": 116.6858, "day": 1, "time": "午餐 园区内", "desc": "烤鸡排骨拼盘¥118·黄油啤酒¥50"}, {"name": "通州万达/附近", "type": "food", "lat": 39.9058, "lng": 116.6414, "day": 1, "time": "18:30-20:00", "desc": "环球出来步行可达·简餐¥40-60"}, {"name": "环球附近酒店", "type": "hotel", "lat": 39.847, "lng": 116.679, "day": 1, "time": "21:30返回", "desc": "明早退房换到市区"}, {"name": "退房前往市区", "type": "transport", "lat": 39.8, "lng": 116.67, "day": 2, "time": "07:30退房出发", "desc": "地铁1h到鼓楼 · 先到酒店放行李"}, {"name": "汉庭(鼓楼)入住", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "09:00入住", "desc": "鼓楼西大街 · 大床房¥280"}, {"name": "明制妆造", "type": "shopping", "lat": 39.914, "lng": 116.408, "day": 2, "time": "09:30-11:30", "desc": "王府世纪大厦 · 明制精妆¥380"}, {"name": "故宫", "type": "attraction", "lat": 39.916, "lng": 116.397, "day": 2, "time": "12:00-17:00", "desc": "门票¥60 · 中轴线+西六宫+御花园"}, {"name": "故宫餐厅", "type": "food", "lat": 39.917, "lng": 116.398, "day": 2, "time": "13:00-14:00", "desc": "景运门外简餐¥40-60·景区内便捷"}, {"name": "四季民福(前门)", "type": "food", "lat": 39.895, "lng": 116.398, "day": 2, "time": "17:30-19:30", "desc": "烤鸭半只¥139·芥末鸭掌¥48"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 2, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)出发", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "07:30出发", "desc": "地铁8转4 约40min"}, {"name": "颐和园", "type": "attraction", "lat": 40.0, "lng": 116.276, "day": 3, "time": "08:40-13:00", "desc": "联票¥60 · 北宫门进"}, {"name": "聚宝源(牛街)", "type": "food", "lat": 39.884, "lng": 116.363, "day": 3, "time": "13:30-15:00", "desc": "手切鲜羊肉¥38·颐和园回程顺路"}, {"name": "鼓楼", "type": "attraction", "lat": 39.942, "lng": 116.394, "day": 3, "time": "15:00-16:30", "desc": "门票¥20登楼"}, {"name": "什刹海", "type": "attraction", "lat": 39.937, "lng": 116.388, "day": 3, "time": "16:30-18:30", "desc": "银锭桥蓝调时刻 · 免费"}, {"name": "姚记炒肝", "type": "food", "lat": 39.942, "lng": 116.397, "day": 3, "time": "18:30-19:30", "desc": "包子¥3·炒肝¥12·鼓楼边步行即到"}, {"name": "汉庭(鼓楼)", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 3, "time": "20:00返回", "desc": "步行回酒店"}, {"name": "汉庭(鼓楼)退房", "type": "hotel", "lat": 39.94, "lng": 116.393, "day": 4, "time": "08:00退房", "desc": "行李随身"}, {"name": "南锣鼓巷", "type": "shopping", "lat": 39.941, "lng": 116.403, "day": 4, "time": "09:00-11:00", "desc": "胡同Citywalk"}, {"name": "大鸭梨(鼓楼)", "type": "food", "lat": 39.942, "lng": 116.395, "day": 4, "time": "12:00-13:30", "desc": "烤鸭整只¥108"}, {"name": "前门/大栅栏", "type": "shopping", "lat": 39.896, "lng": 116.398, "day": 4, "time": "13:30-15:00", "desc": "逛老字号"}, {"name": "首都机场T3", "type": "transport", "lat": 40.053, "lng": 116.615, "day": 4, "time": "17:30-19:00", "desc": "机场线1h·ZH9108 19:00起飞"}], "meals": [{"name": "四季民福(前门)", "district": "前门", "type": "烤鸭", "perPerson": "¥130", "dish": "烤鸭半只¥139·芥末鸭掌¥48", "note": "避开故宫店！前门店排队仅20min"}, {"name": "聚宝源(牛街)", "district": "牛街", "type": "涮肉", "perPerson": "¥90", "dish": "手切鲜羊肉¥38·烧饼¥3", "note": "涮肉天花板·晚8点后不排队"}, {"name": "南门涮肉(天坛)", "district": "天坛", "type": "涮肉", "perPerson": "¥85", "dish": "手切羊肉¥42·糖蒜", "note": "性价比最高涮肉"}, {"name": "大鸭梨(鼓楼)", "district": "鼓楼", "type": "烤鸭", "perPerson": "¥80", "dish": "烤鸭整只¥108·京酱肉丝¥38", "note": "平价烤鸭之王"}, {"name": "三把扫帚", "district": "环球影城", "type": "西餐", "perPerson": "¥120", "dish": "烤鸡排骨拼盘¥118·黄油啤酒¥50", "note": "园区内性价比最高"}, {"name": "姚记炒肝", "district": "鼓楼", "type": "小吃", "perPerson": "¥18", "dish": "包子¥3·炒肝¥12", "note": "鼓楼边老店·早餐首选"}, {"name": "护国寺小吃", "district": "地安门", "type": "小吃", "perPerson": "¥15", "dish": "面茶¥6·糖油饼¥4·豌豆黄¥8", "note": "老北京早点一站式"}, {"name": "增盛魁小吃", "district": "东四", "type": "小吃", "perPerson": "¥12", "dish": "糖火烧¥3·豆腐脑¥4", "note": "胡同老味道"}], "budget_table": {"cols": ["类别", "明细", "小计"], "rows": [["大交通", "MF8350去+ZH9108返 ×2人", "¥1,920"], ["住宿", "环球¥200x2+汉庭¥280x2", "¥960"], ["门票", "环球¥638+故宫¥60+颐和园¥60+鼓楼¥20 ×2人", "¥1,556"], ["妆造", "明制汉服精妆", "¥380"], ["餐饮", "4天三餐+零食", "¥755"], ["交通", "地铁+机场线", "¥106"], ["总计", "含弹性", "约¥6,540"]], "total": "¥5,907（缓冲¥800 → 约¥6,700）"}, "warnings": [{"trap": "故宫抢不到票", "fix": "提前7天晚8点准时在\"故宫博物院\"小程序抢，旺季秒没"}, {"trap": "环球排队3h+", "fix": "周四工作日去+开园前1.5h到门口+经济允许买优速通"}, {"trap": "四季民福故宫店排队1000桌", "fix": "去前门店！排队20min味道一样。抖音验证：黄牛号卖50元"}, {"trap": "景区\"老北京炸酱面\"¥38一碗", "fix": "坐地铁2站去胡同吃¥15的"}, {"trap": "全聚德贵(¥280+/人)且味道平庸", "fix": "四季民福/大鸭梨"}, {"trap": "王府井/南锣主街小吃溢價严重", "fix": "去牛街/东四胡同吃地道小吃"}], "emergency": {"police": "110", "ambulance": "120", "hospital": "北大第一医院 · 西城区西什库大街8号"}, "links": [{"label": "故宫预约", "url": "https://gugong.ktmtech.cn/", "type": "reserve"}, {"label": "环球影城App", "url": "https://www.universalbeijingresort.com/", "type": "app"}, {"label": "颐和园预约", "url": "https://www.summerpalace-china.com/", "type": "reserve"}, {"label": "12306购票", "url": "https://www.12306.cn/", "type": "app"}], "weather": {"city": "北京", "daily": [{"code": 1, "high": 32, "low": 19, "date": "2026-06-09"}, {"code": 3, "high": 30, "low": 20, "date": "2026-06-10"}, {"code": 61, "high": 28, "low": 18, "date": "2026-06-11"}, {"code": 1, "high": 31, "low": 19, "date": "2026-06-12"}]}, "checklist": {"证件": ["身份证", "通行证"], "电子设备": ["充电线", "充电宝", "耳机", "相机电池闪光灯"], "洗漱化妆": ["蓬蓬粉", "梳子", "唇膏", "眼药水", "护手霜", "皮炎平", "睫毛夹", "口红眼线", "散粉"], "随身": ["抽纸", "小包纸", "手机挂绳"], "摄影": ["相机", "闪光灯", "CCD"], "配饰": ["项链", "戒指"], "其他": ["水"]}, "cuts": [{"what": "恭王府", "why": "故宫已覆盖皇家建筑，同质化严重，留给下次"}, {"what": "798艺术区", "why": "偏离主路线太远，往返需2h+，天数不够"}, {"what": "长城", "why": "远郊单程1.5h，4天行程放不下，单独留一整天才值得"}, {"what": "天坛", "why": "颐和园已覆盖皇家园林，天坛单独绕路性价比低"}], "sources": [{"platform": "携程", "date": "2026-06-09", "summary": "机票航班号、时刻、票价"}, {"platform": "大众点评", "date": "2026-06-09", "summary": "餐厅评分、人均、排队风险"}, {"platform": "小红书", "date": "2026-06-09", "summary": "餐厅氛围、实拍照片、近期体验"}, {"platform": "抖音", "date": "2026-06-09", "summary": "实时人流、排队情况、本地人反馈"}, {"platform": "高德地图", "date": "2026-06-09", "summary": "POI经纬度、地铁线路、步行距离"}, {"platform": "Open-Meteo", "date": "2026-06-09", "summary": "4天天气预报"}, {"platform": "携程/美团", "date": "2026-06-09", "summary": "酒店名、房型、含税价、评分"}]};
 var DAY_COLORS = {"1": "#e8835e", "2": "#5d8c7a", "3": "#7b9ec7", "4": "#c490b6", "5": "#e8b456", "6": "#d94f4f"};
 var TICONS = {"attraction": "#3b82f6", "food": "#ef4444", "shopping": "#8b5cf6", "hotel": "#f59e0b", "transport": "#6b7280", "drink": "#a0522d"};
 var TEMOJI = {"attraction": "★", "food": "🍜", "shopping": "🛍", "hotel": "🏨", "transport": "🚇", "drink": "🧋"};
@@ -262,52 +248,64 @@ var CLAT = 39.92;
 var CLNG = 116.42;
 var ZOOM = 12;
 
-var map = null, allCoords = [], markers = [], polylines = [];
+var map = null, markers = [], polylines = [];
 
 function initMap() {
-  if (map || typeof L === 'undefined') return;
-  try {
-    map = L.map('map', {center: [CLAT, CLNG], zoom: ZOOM, zoomControl: false});
-    L.control.zoom({position:'topright'}).addTo(map);
-    L.tileLayer('https://webrd01.is.autonavi.com/appmaptile?lang=zh_cn&size=1&scale=1&style=7&x={x}&y={y}&z={z}', {
-      maxZoom: 18
-    }).addTo(map);
-    showDay(0);
-  } catch(e) {}
+  if (map) return;
+  if (window.AMap) {
+    try {
+      map = new AMap.Map('map', {
+        zoom: ZOOM, center: [CLNG, CLAT],
+        viewMode: '2D', resizeEnable: true,
+        mapStyle: 'amap://styles/normal'
+      });
+      AMap.plugin('AMap.Scale', function() {
+        map.addControl(new AMap.Scale({ position: 'LB' }));
+      });
+      showDay(0);
+    } catch(e) { console.error(e); }
+  } else {
+    setTimeout(initMap, 200);
+  }
 }
 
 function clearMap() {
   if (!map) return;
-  markers.forEach(function(m) { map.removeLayer(m); });
-  polylines.forEach(function(p) { map.removeLayer(p); });
+  markers.forEach(function(m) { map.remove(m); });
+  polylines.forEach(function(p) { map.remove(p); });
   markers = [];
   polylines = [];
 }
 
-DATA.pois.forEach(function(p) { if (p.lat) allCoords.push([p.lat, p.lng]); });
 
 function showDay(idx) {
   if (!map) return;
   clearMap();
-  var coords = [];
+  var overlays = [];
 
   if (idx === 0) {
     // 总览：每 Day 一个标记
     (DATA.days || []).forEach(function(d) {
-      var dc = [];
-      DATA.pois.forEach(function(p) { if (p.day === d.id && p.lat) dc.push([p.lat, p.lng]); });
-      if (!dc.length) return;
-      var clat = 0, clng = 0;
-      dc.forEach(function(c) { clat += c[0]; clng += c[1]; });
-      clat /= dc.length; clng /= dc.length;
+      // 找当天主景点：优先 attraction，其次第一个非 transport/hotel 的 POI
+      var dayPois = DATA.pois.filter(function(p) { return p.day === d.id && p.lat; });
+      if (!dayPois.length) return;
+      var main = dayPois.find(function(p) { return p.type === 'attraction'; })
+             || dayPois.find(function(p) { return p.type !== 'transport' && p.type !== 'hotel'; })
+             || dayPois[0];
       var clr = DAY_COLORS[d.id] || '#888';
-      var m = L.marker([clat, clng], {icon: L.divIcon({
-        html: '<div style="width:38px;height:38px;background:' + clr + ';border:3px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:800;box-shadow:0 3px 10px rgba(0,0,0,.25)">D' + d.id + '</div>',
-        className: '', iconSize:[38,38], iconAnchor:[19,19]
-      })}).addTo(map);
-      m.bindTooltip(d.title, {permanent:true, direction:'top', offset:[0,-22], className:'day-tooltip'});
+      // 圆圈 + 标题一体
+      var m = new AMap.Marker({
+        position: [main.lng, main.lat],
+        content: '<div style="text-align:center;line-height:1.2">'
+          + '<div style="width:38px;height:38px;background:' + clr + ';border:3px solid #fff;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:800;box-shadow:0 3px 10px rgba(0,0,0,.25)">D' + d.id + '</div>'
+          + '<div style="font-size:10px;font-weight:700;color:#1a1a1a;text-shadow:0 0 2px #fff,0 0 2px #fff;margin-top:2px;white-space:nowrap">' + d.title + '</div>'
+          + '</div>',
+        offset: new AMap.Pixel(-19, -52),
+        zIndex: 100
+      });
+      map.add(m);
       markers.push(m);
-      coords.push([clat, clng]);
+      overlays.push(m);
     });
     // 总览路线
     (DATA.routes || []).forEach(function(r) {
@@ -317,31 +315,52 @@ function showDay(idx) {
       if (!t) t = DATA.pois.find(function(p) { return p.name.indexOf(r.to) >= 0 || r.to.indexOf(p.name) >= 0; });
       if (!f || !t) return;
       var color = DAY_COLORS[r.day] || '#999';
-      polylines.push(L.polyline([[f.lat,f.lng],[t.lat,t.lng]], {
-        color:color, weight:2, opacity:0.4, dashArray:'8,5'
-      }).addTo(map));
+      var poly = new AMap.Polyline({
+        path: [[f.lng, f.lat], [t.lng, t.lat]],
+        strokeColor: color, strokeWeight: 2, strokeOpacity: 0.4,
+        strokeStyle: 'dashed', lineJoin: 'round', zIndex: 50
+      });
+      poly.setMap(map);
+      polylines.push(poly);
+      overlays.push(poly);
     });
+    if (overlays.length) {
+      map.setFitView(overlays, false, [60, 60, 60, 60]);
+    }
   } else {
     // 单日：显示当天 POI，序号标记
     var dayPois = DATA.pois.filter(function(p) { return p.day === idx; });
     var dayRoutes = (DATA.routes || []).filter(function(r) { return r.day === idx; });
+    var fitOverlays = [];
 
     dayPois.forEach(function(p, i) {
       if (!p.lat) return;
       var clr = TICONS[p.type] || '#888';
       var num = i + 1;
-      var m = L.marker([p.lat, p.lng], {icon: L.divIcon({
-        html: '<div style="width:24px;height:24px;background:' + clr + ';border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.22)">' + num + '</div>',
-        className: '', iconSize:[24,24], iconAnchor:[12,12], popupAnchor:[0,-14]
-      })}).addTo(map);
-      var pop = '<b>' + p.name + '</b>';
-      if (p.time) pop += '<br>' + p.time;
-      if (p.desc) pop += '<br>' + p.desc;
-      m.bindPopup(pop);
-      markers.push(m);
-      coords.push([p.lat, p.lng]);
+      var marker = new AMap.Marker({
+        position: [p.lng, p.lat],
+        content: '<div style="width:24px;height:24px;background:' + clr + ';border:2.5px solid #fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;color:#fff;font-weight:700;box-shadow:0 2px 6px rgba(0,0,0,.22)">' + num + '</div>',
+        offset: new AMap.Pixel(-12, -12),
+        zIndex: 100
+      });
+      map.add(marker);
+      // Click popup
+      (function(poi, lng, lat) {
+        marker.on('click', function() {
+          var c = '<div style="font-size:13px;line-height:1.5;padding:4px"><b>' + poi.name + '</b>';
+          if (poi.time) c += '<br>' + poi.time;
+          if (poi.desc) c += '<br>' + poi.desc;
+          c += '</div>';
+          var info = new AMap.InfoWindow({ content: c, offset: new AMap.Pixel(0, -30) });
+          info.open(map, [lng, lat]);
+        });
+      })(p, p.lng, p.lat);
+      markers.push(marker);
+      overlays.push(marker);
+      if (p.type !== 'transport') fitOverlays.push(marker);
     });
 
+    // 单日路线
     dayRoutes.forEach(function(r) {
       var f = DATA.pois.find(function(p) { return p.name === r.from; });
       if (!f) f = DATA.pois.find(function(p) { return p.name.indexOf(r.from) >= 0 || r.from.indexOf(p.name) >= 0; });
@@ -349,13 +368,21 @@ function showDay(idx) {
       if (!t) t = DATA.pois.find(function(p) { return p.name.indexOf(r.to) >= 0 || r.to.indexOf(p.name) >= 0; });
       if (!f || !t) return;
       var color = DAY_COLORS[r.day] || '#999';
-      polylines.push(L.polyline([[f.lat,f.lng],[t.lat,t.lng]], {
-        color:color, weight:2.5, opacity:0.55, dashArray:'8,5'
-      }).addTo(map));
+      var poly = new AMap.Polyline({
+        path: [[f.lng, f.lat], [t.lng, t.lat]],
+        strokeColor: color, strokeWeight: 2.5, strokeOpacity: 0.55,
+        strokeStyle: 'dashed', lineJoin: 'round', zIndex: 50
+      });
+      poly.setMap(map);
+      polylines.push(poly);
+      overlays.push(poly);
+      fitOverlays.push(poly);
     });
-  }
 
-  if (coords.length) map.fitBounds(coords, {padding: [40, 40], maxZoom: 15});
+    if (fitOverlays.length) {
+      map.setFitView(fitOverlays, false, [40, 40, 40, 40]);
+    }
+  }
 }
 
 // ===== UI =====
@@ -685,7 +712,7 @@ function openAmap(name, lat, lng) {
 }
 
 go(0);
-setTimeout(initMap, 500);
+initMap();
 </script>
 </body>
 </html>
