@@ -20,13 +20,16 @@ body{
   background:#f5f3ef;color:var(--text);line-height:1.55;
   -webkit-font-smoothing:antialiased;
 }
-#map{width:100%;height:40vh;min-height:280px;position:sticky;top:0;z-index:100;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+#map{width:100%;height:40vh;min-height:280px;position:sticky;top:0;z-index:100;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);background:#e8e4df}
+.map-skel{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:1;pointer-events:none}
+.map-skel div{width:48px;height:48px;border:3px solid rgba(0,0,0,.1);border-top-color:rgba(0,0,0,.25);border-radius:50%;animation:skel-spin .8s linear infinite}
+@keyframes skel-spin{to{transform:rotate(360deg)}}
+.map-loaded .map-skel{display:none}
 .tab-area{position:sticky;top:40vh;z-index:99}
 .tabs{
   display:flex;gap:6px;padding:10px 14px;overflow-x:auto;overflow-y:hidden;
   -webkit-overflow-scrolling:touch;
-  background:rgba(255,255,255,.78);backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
+  background:rgba(255,255,255,.95);
   border-bottom:1px solid rgba(255,255,255,.5);
   scrollbar-width:none;mask-image:linear-gradient(to right,#000 85%,transparent);
   -webkit-mask-image:linear-gradient(to right,#000 85%,transparent);
@@ -36,17 +39,16 @@ body{
   flex-shrink:0;padding:8px 18px;border-radius:99px;border:1px solid rgba(0,0,0,.06);
   background:#fff;color:var(--text2);font-size:14px;font-weight:600;
   cursor:pointer;touch-action:manipulation;user-select:none;
-  transition:all .25s;white-space:nowrap;min-height:38px;box-shadow:0 1px 3px rgba(0,0,0,.04);
+  transition:all .25s;white-space:nowrap;min-height:44px;box-shadow:0 1px 3px rgba(0,0,0,.04);
 }
 .tab:active{transform:scale(.96)}
 .tab.active{
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  background:var(--accent);color:#fff;
   border-color:transparent;box-shadow:0 4px 12px rgba(79,70,229,.35);
 }
 .day-bar{
   display:none;gap:6px;padding:8px 14px;overflow-x:auto;
-  background:rgba(255,255,255,.55);backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);border-bottom:1px solid rgba(255,255,255,.4);
+  background:rgba(255,255,255,.92);border-bottom:1px solid rgba(0,0,0,.06);
   scrollbar-width:none;
 }
 .day-bar.show{display:flex}
@@ -56,12 +58,12 @@ body{
   border:1px solid rgba(0,0,0,.06);background:#fff;
   color:var(--text2);font-size:13px;font-weight:600;
   cursor:pointer;touch-action:manipulation;user-select:none;
-  white-space:nowrap;min-height:36px;transition:all .2s;
+  white-space:nowrap;min-height:44px;transition:all .2s;
   box-shadow:0 1px 2px rgba(0,0,0,.03);
 }
 .day-pill:active{transform:scale(.96)}
 .day-pill.active{
-  background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;
+  background:var(--accent);color:#fff;
   border-color:transparent;box-shadow:0 4px 12px rgba(79,70,229,.35);
 }
 .content{max-width:680px;margin:0 auto;padding:16px 14px calc(32px+var(--safe-b));min-height:60vh}
@@ -89,7 +91,7 @@ body{
   background:rgba(245,158,11,.1);border:1px solid rgba(245,158,11,.25);
   border-radius:99px;font-size:12px;color:#b45309;font-weight:700}
 .card-alert{margin-top:10px;padding:8px 12px;background:rgba(239,68,68,.06);
-  border-left:3px solid var(--red);border-radius:0 8px 8px 0;
+  border:1px solid rgba(239,68,68,.15);border-radius:8px;
   font-size:12px;color:#b91c1c;line-height:1.55;font-weight:500}
 .badge{display:inline-flex;align-items:center;font-size:10px;font-weight:800;
   padding:2px 8px;border-radius:6px;flex-shrink:0;letter-spacing:.02em}
@@ -232,7 +234,7 @@ body{
 </style>
 </head>
 <body>
-<div id="map"></div>
+<div id="map"><div class="map-skel"><div></div></div></div>
 <div class="tab-area" id="tabArea">
 <div class="tabs" id="tabs"></div>
 <div class="day-bar" id="dayBar"></div>
@@ -262,6 +264,7 @@ function initMap() {
       AMap.plugin('AMap.Scale', function() {
         map.addControl(new AMap.Scale({ position: 'LB' }));
       });
+      document.getElementById('map').classList.add('map-loaded');
       showDay(0);
     } catch(e) { console.error(e); }
   } else {
@@ -501,9 +504,11 @@ function renderWeather() {
   var startIdx = 0, minDiff = Infinity;
   w.daily.forEach(function(d, i) {
     var dd = new Date(d.date + 'T00:00:00');
-    var diff = Math.abs(dd - today);
-    if (diff < minDiff) { minDiff = diff; startIdx = i; }
+    var diff = dd - today;
+    if (diff >= 0 && diff < minDiff) { minDiff = diff; startIdx = i; }
   });
+  // 如果所有日期都在今天之前，取最后 4 天
+  if (minDiff === Infinity) startIdx = Math.max(0, w.daily.length - 4);
   var days = w.daily.slice(startIdx, startIdx + 4);
 
   var allTemps = [];
@@ -567,7 +572,7 @@ function renderChecklist() {
     h += '<div class="chk-group"><div class="chk-title">' + g + '</div><div class="chk-items">';
     groups[g].forEach(function(item) {
       var key = prefix + g + '_' + item;
-      h += '<div class="chk-item" data-chk="' + key + '"><div class="chk-box"></div><div class="chk-name">' + item + '</div></div>';
+      h += '<div class="chk-item" role="checkbox" aria-checked="false" tabindex="0" data-chk="' + key + '"><div class="chk-box"></div><div class="chk-name">' + item + '</div></div>';
     });
     h += '</div></div>';
   });
@@ -578,8 +583,8 @@ ctEl.addEventListener('click', function(e) {
   var item = e.target.closest('.chk-item');
   if (!item) return;
   var key = item.dataset.chk, isDone = item.classList.contains('done');
-  if (isDone) { item.classList.remove('done'); localStorage.removeItem(key); }
-  else { item.classList.add('done'); localStorage.setItem(key, '1'); }
+  if (isDone) { item.classList.remove('done'); item.setAttribute('aria-checked', 'false'); localStorage.removeItem(key); }
+  else { item.classList.add('done'); item.setAttribute('aria-checked', 'true'); localStorage.setItem(key, '1'); }
 });
 
 // XHS button handler
@@ -614,8 +619,8 @@ function toggleAllChk() {
   var items = document.querySelectorAll('.chk-item');
   var allDone = Array.from(items).every(function(el) { return el.classList.contains('done'); });
   items.forEach(function(el) {
-    if (allDone) { el.classList.remove('done'); localStorage.removeItem(el.dataset.chk); }
-    else { el.classList.add('done'); localStorage.setItem(el.dataset.chk, '1'); }
+    if (allDone) { el.classList.remove('done'); el.setAttribute('aria-checked', 'false'); localStorage.removeItem(el.dataset.chk); }
+    else { el.classList.add('done'); el.setAttribute('aria-checked', 'true'); localStorage.setItem(el.dataset.chk, '1'); }
   });
   var btn = document.getElementById('chkAllBtn');
   if (btn) btn.textContent = allDone ? '全部勾选' : '全部取消';
@@ -629,7 +634,7 @@ function toggleChkFilter() {
 }
 function resetChk() {
   var items = document.querySelectorAll('.chk-item');
-  items.forEach(function(el) { el.classList.remove('done'); localStorage.removeItem(el.dataset.chk); });
+  items.forEach(function(el) { el.classList.remove('done'); el.setAttribute('aria-checked', 'false'); localStorage.removeItem(el.dataset.chk); });
 }
 function restoreChk() {
   var prefix = getChkPrefix();
@@ -637,7 +642,7 @@ function restoreChk() {
     var k = localStorage.key(i);
     if (k.indexOf(prefix) === 0) {
       var el = document.querySelector('[data-chk="' + k + '"]');
-      if (el) el.classList.add('done');
+      if (el) { el.classList.add('done'); el.setAttribute('aria-checked', 'true'); }
     }
   }
 }
