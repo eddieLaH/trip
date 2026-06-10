@@ -454,7 +454,7 @@ function renderDay(idx) {
     var btns = '';
     if (l.lat) btns += '<button class="cbtn nav" data-lat="' + l.lat + '" data-lng="' + l.lng + '" data-name="' + l.name.replace(/"/g, '&quot;') + '">导航</button>';
     if (l.xhs) btns += '<button class="cbtn xhs" data-xhs="' + l.xhs + '">小红书</button>';
-    if (l.dianping) btns += '<button class="cbtn dp" data-dp="' + l.dianping + '">点评</button>';
+    if (l.dianping) btns += '<a class="cbtn dp" href="' + l.dianping + '" target="_blank">点评</a>';
     if (l.reserve) btns += '<a class="cbtn rsv" href="' + l.reserve + '" target="_blank">预约</a>';
     if (btns) h += '<div class="btn-row">' + btns + '</div>';
     if (l.pay) {
@@ -571,25 +571,6 @@ ctEl.addEventListener('click', function(e) {
     setTimeout(function() {
       document.body.removeChild(iframe);
       if (Date.now() - start < 1500) { window.open(url, "_blank"); }
-    }, 1000);
-    return;
-  }
-});
-
-// 点评按钮：用 web URL 走 iframe 触发 Universal Link
-ctEl.addEventListener('click', function(e) {
-  var dpBtn = e.target.closest('.cbtn.dp');
-  if (dpBtn) {
-    e.preventDefault();
-    var url = dpBtn.dataset.dp;
-    var start = Date.now();
-    var iframe = document.createElement('iframe');
-    iframe.style.display = 'none';
-    iframe.src = url;
-    document.body.appendChild(iframe);
-    setTimeout(function() {
-      document.body.removeChild(iframe);
-      if (Date.now() - start < 1500) { window.open(url, '_blank'); }
     }, 1000);
     return;
   }
